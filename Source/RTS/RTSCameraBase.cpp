@@ -20,7 +20,7 @@ ARTSCameraBase::ARTSCameraBase()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->AttachToComponent(SpringArm, FAttachmentTransformRules::KeepRelativeTransform);
 
-	SpringArm->TargetArmLength = 3000.0f;
+	SpringArm->TargetArmLength = 5000.0f;
 	FRotator SpringArmRotation(-70, 0, 0);
 	SpringArm->SetWorldRotation(SpringArmRotation);
 	SpringArm->bDoCollisionTest = false;
@@ -37,15 +37,17 @@ void ARTSCameraBase::MoveLeft()
 	FVector DeltaLocation(0.0f, 0.0f, 0.0f);
 
 	PlayerController->GetMousePosition(CursorLocationX, CursorLocationY);
-	ViewportScale = GEngine->GameViewport->GetDPIScale();
+	ViewportScale = GEngine->GameViewport->GetDPIScale(); // Getting viewport scale
 	GEngine->GameViewport->GetViewportSize(ViewportSize);
 
-	float ScaledCursorLocationX = CursorLocationX * ViewportScale;
-	float SensetiveViewportZone = ViewportSize.X * 0.05f;
+	float ScaledCursorLocationX = CursorLocationX * ViewportScale; // Making location adjustment based on player's viewport scale
+	float SensetiveViewportZone = ViewportSize.X * 0.05f;		   // Setting which viewport zone percentage will move camera when cursor is in it
 	float NormalizedValue = UKismetMathLibrary::NormalizeToRange(ScaledCursorLocationX, 0, SensetiveViewportZone);
 	float ClampedValue = FMath::Clamp(NormalizedValue, 0.0f, 1.0f);
 
-	DeltaLocation.X = (1 - ClampedValue) * 100.0f;
+	float SpringArmLenghNormalized = UKismetMathLibrary::NormalizeToRange(SpringArm->TargetArmLength, 1000.0f, 5000.0f);
+	float MovementSpeed = SpringArmLenghNormalized * 40.0f + 60.0f; // Creating dependency between zoom scale and camera movement speed
+	DeltaLocation.X = (1 - ClampedValue) * MovementSpeed;
 
 	RootSceneComponent->AddRelativeLocation(DeltaLocation);
 
@@ -68,7 +70,9 @@ void ARTSCameraBase::MoveRight()
 	float NormalizedValue = UKismetMathLibrary::NormalizeToRange(ScaledCursorLocationX, SensetiveViewportZone, ViewportSize.X);
 	float ClampedValue = FMath::Clamp(NormalizedValue, 0.0f, 1.0f);
 
-	DeltaLocation.X = ClampedValue * -100.0f;
+	float SpringArmLenghNormalized = UKismetMathLibrary::NormalizeToRange(SpringArm->TargetArmLength, 1000.0f, 5000.0f);
+	float MovementSpeed = SpringArmLenghNormalized * 40.0f + 60.0f;
+	DeltaLocation.X = ClampedValue * -MovementSpeed;
 
 	RootSceneComponent->AddRelativeLocation(DeltaLocation);
 
@@ -91,7 +95,9 @@ void ARTSCameraBase::MoveUp()
 	float NormalizedValue = UKismetMathLibrary::NormalizeToRange(ScaledCursorLocationY, 0, SensetiveViewportZone);
 	float ClampedValue = FMath::Clamp(NormalizedValue, 0.0f, 1.0f);
 
-	DeltaLocation.Y = (1 - ClampedValue) * 100.0f;
+	float SpringArmLenghNormalized = UKismetMathLibrary::NormalizeToRange(SpringArm->TargetArmLength, 1000.0f, 5000.0f);
+	float MovementSpeed = SpringArmLenghNormalized * 40.0f + 60.0f;
+	DeltaLocation.Y = (1 - ClampedValue) * MovementSpeed;
 
 	RootSceneComponent->AddRelativeLocation(DeltaLocation);
 
@@ -114,7 +120,9 @@ void ARTSCameraBase::MoveDown()
 	float NormalizedValue = UKismetMathLibrary::NormalizeToRange(ScaledCursorLocationY, SensetiveViewportZone, ViewportSize.Y);
 	float ClampedValue = FMath::Clamp(NormalizedValue, 0.0f, 1.0f);
 
-	DeltaLocation.Y = ClampedValue * -100.0f;
+	float SpringArmLenghNormalized = UKismetMathLibrary::NormalizeToRange(SpringArm->TargetArmLength, 1000.0f, 5000.0f);
+	float MovementSpeed = SpringArmLenghNormalized * 40.0f + 60.0f;
+	DeltaLocation.Y = ClampedValue * -MovementSpeed;
 
 	RootSceneComponent->AddRelativeLocation(DeltaLocation);
 
@@ -134,6 +142,7 @@ void ARTSCameraBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// For some reason right and down movements react on cursor earlier than others in editor, while it works fine in build
 	MoveLeft();
 	MoveRight();
 	MoveUp();

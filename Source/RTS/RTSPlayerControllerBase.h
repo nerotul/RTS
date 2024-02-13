@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "RTSPlayerControllerBase.generated.h"
 
+
+class ARTSCameraBase;
 /**
  * 
  */
@@ -14,8 +16,23 @@ class RTS_API ARTSPlayerControllerBase : public APlayerController
 {
 	GENERATED_BODY()
 
-	ARTSPlayerControllerBase();
-	
+public:
+
+protected:
 	virtual void BeginPlay() override;
+
+private:
+	ARTSPlayerControllerBase();
+
+	virtual void SetupInputComponent() override;
+
+	void ZoomCameraIn();
+
+	void ZoomCameraOut();
+
+	ARTSCameraBase* CameraActor = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	float ZoomFactor = 1.0f;
 
 };
