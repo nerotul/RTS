@@ -9,6 +9,7 @@
 
 class ARTSCameraBase;
 class ARTSCanvasBase;
+class AUnitBase;
 
 /**
  * 
@@ -19,6 +20,10 @@ class RTS_API ARTSPlayerControllerBase : public APlayerController
 	GENERATED_BODY()
 
 public:
+	void AddUnitToSelection(AUnitBase* UnitToAdd);
+
+	void RemoveUnitFromSelection(AUnitBase* UnitToRemove);
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -41,4 +46,7 @@ private:
 
 	void StartSelection();
 	void StopSelection();
+
+	TArray<AUnitBase*> UnitSelection;
+
 };

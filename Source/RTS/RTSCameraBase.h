@@ -20,13 +20,13 @@ public:
 	ARTSCameraBase();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	USceneComponent* RootSceneComponent;
+	USceneComponent* RootSceneComponent = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	USpringArmComponent* SpringArm;
+	USpringArmComponent* SpringArm = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	UCameraComponent* Camera;
+	UCameraComponent* Camera = nullptr;
 
 	APlayerController* PlayerController = nullptr;
 

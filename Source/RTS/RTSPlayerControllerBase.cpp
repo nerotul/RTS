@@ -5,6 +5,8 @@
 #include "RTSCameraBase.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "RTSCanvasBase.h"
+#include "UnitBase.h"
+
 
 
 ARTSPlayerControllerBase::ARTSPlayerControllerBase()
@@ -12,6 +14,8 @@ ARTSPlayerControllerBase::ARTSPlayerControllerBase()
 	SetShowMouseCursor(true);
 	bEnableClickEvents = true;
 	bEnableTouchEvents = true;
+
+	DefaultClickTraceChannel = ECollisionChannel::ECC_Camera;  // Needed for unit to react on LMB click
 }
 
 void ARTSPlayerControllerBase::BeginPlay()
@@ -22,13 +26,15 @@ void ARTSPlayerControllerBase::BeginPlay()
 	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
 	InputMode.SetHideCursorDuringCapture(false);
 
-	SetInputMode(InputMode);
+	SetInputMode(InputMode);  // Locks cursor inside game window
 
 	AActor* ViewTarget = GetViewTarget();
 	CameraActor = Cast<ARTSCameraBase>(ViewTarget);
 
 	AHUD* HUDInstance = GetHUD();
 	CanvasHUDInstance = Cast<ARTSCanvasBase>(HUDInstance);
+
+	
 
 }
 
@@ -82,5 +88,15 @@ void ARTSPlayerControllerBase::StopSelection()
 		CanvasHUDInstance->StopSelection();
 	}
 
+}
+
+void ARTSPlayerControllerBase::AddUnitToSelection(AUnitBase* UnitToAdd)
+{
+	UnitSelection.AddUnique(UnitToAdd);
+}
+
+void ARTSPlayerControllerBase::RemoveUnitFromSelection(AUnitBase* UnitToRemove)
+{
+	UnitSelection.Remove(UnitToRemove);
 }
 
