@@ -4,7 +4,7 @@
 #include "RTSPlayerControllerBase.h"
 #include "RTSCameraBase.h"
 #include "GameFramework/SpringArmComponent.h"
-
+#include "RTSCanvasBase.h"
 
 
 ARTSPlayerControllerBase::ARTSPlayerControllerBase()
@@ -27,6 +27,9 @@ void ARTSPlayerControllerBase::BeginPlay()
 	AActor* ViewTarget = GetViewTarget();
 	CameraActor = Cast<ARTSCameraBase>(ViewTarget);
 
+	AHUD* HUDInstance = GetHUD();
+	CanvasHUDInstance = Cast<ARTSCanvasBase>(HUDInstance);
+
 }
 
 void ARTSPlayerControllerBase::SetupInputComponent()
@@ -35,6 +38,8 @@ void ARTSPlayerControllerBase::SetupInputComponent()
 
 	InputComponent->BindAction("ZoomIn", IE_Pressed, this, &ARTSPlayerControllerBase::ZoomCameraIn);
 	InputComponent->BindAction("ZoomOut", IE_Pressed, this, &ARTSPlayerControllerBase::ZoomCameraOut);
+	InputComponent->BindAction("SelectWithCanvas", IE_Pressed, this, &ARTSPlayerControllerBase::StartSelection);
+	InputComponent->BindAction("SelectWithCanvas", IE_Released, this, &ARTSPlayerControllerBase::StopSelection);
 
 }
 
@@ -58,6 +63,23 @@ void ARTSPlayerControllerBase::ZoomCameraOut()
 		float ClampedNewValue = FMath::Clamp(SpringArmLenghNewValue, 1000.0f, 5000.0f);
 		CameraActor->SpringArm->TargetArmLength = ClampedNewValue;
 
+	}
+
+}
+
+void ARTSPlayerControllerBase::StartSelection()
+{
+	if (IsValid(CanvasHUDInstance))
+	{
+		CanvasHUDInstance->StartSelection();
+	}
+}
+
+void ARTSPlayerControllerBase::StopSelection()
+{
+	if (IsValid(CanvasHUDInstance))
+	{
+		CanvasHUDInstance->StopSelection();
 	}
 
 }

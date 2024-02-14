@@ -8,6 +8,8 @@
 
 
 class ARTSCameraBase;
+class ARTSCanvasBase;
+
 /**
  * 
  */
@@ -35,4 +37,8 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float ZoomFactor = 1.0f;
 
+	ARTSCanvasBase* CanvasHUDInstance = nullptr;
+
+	void StartSelection();
+	void StopSelection();
 };

@@ -38,6 +38,14 @@ public:
 
 	void MoveDown();
 
+	float GetScaledCursorLocation(float CursorLocationToScale);
+
+	float GetViewportSensetiveZone(float ViewportAxis, float ZonePercantage);
+
+	float GetMovementSpeedScaledOnZoom();
+
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
