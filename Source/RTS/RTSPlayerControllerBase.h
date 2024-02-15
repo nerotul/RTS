@@ -25,6 +25,9 @@ public:
 
 	void ClearSelection();
 
+	UPROPERTY(BlueprintReadOnly)
+	TArray<AUnitBase*> UnitSelection;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -47,6 +50,5 @@ private:
 	void StartSelection();
 	void StopSelection();
 
-	TArray<AUnitBase*> UnitSelection;
 
 };
