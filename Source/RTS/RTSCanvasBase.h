@@ -7,6 +7,8 @@
 #include "RTSSelectionInterface.h"
 #include "RTSCanvasBase.generated.h"
 
+class ARTSPlayerControllerBase;
+class AUnitBase;
 
 /**
  * 
@@ -24,6 +26,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	FLinearColor CanvasColor;
 
+	UPROPERTY(EditDefaultsOnly)
+	float CanvasDeadZone = 100.0f;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -32,9 +37,11 @@ protected:
 	FVector2D PointA;
 	FVector2D PointB;
 
-	APlayerController* PlayerController = nullptr;
+	ARTSPlayerControllerBase* RTSPlayerController = nullptr;
 
 	bool bIsDrawing = false;
 
 	void GetScaledCursorPosition(float& OutScaledCursorLocationX, float& OutScaledCursorLocationY);
+
+	TArray<AUnitBase*> UnitsSelectedWithRectange;
 };

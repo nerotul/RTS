@@ -20,7 +20,7 @@ ARTSCameraBase::ARTSCameraBase()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->AttachToComponent(SpringArm, FAttachmentTransformRules::KeepRelativeTransform);
 
-	SpringArm->TargetArmLength = 5000.0f;
+	SpringArm->TargetArmLength = 3000.0f;
 	FRotator SpringArmRotation(-70, 0, 0);
 	SpringArm->SetWorldRotation(SpringArmRotation);
 	SpringArm->bDoCollisionTest = false;

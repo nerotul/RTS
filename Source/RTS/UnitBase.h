@@ -21,11 +21,11 @@ public:
 	UDecalComponent* DecalComponent = nullptr;
 
 	UFUNCTION()
-	void OnSelected(AActor* Target, FKey ButtonPressed);
-
-	bool bIsSelected = false;
+	void OnUnitClicked(AActor* Target, FKey ButtonPressed);
 
 	ARTSPlayerControllerBase* RTSPlayerController = nullptr;
+
+	void IsSelected(bool bIsSelected);
 
 protected:
 	// Called when the game starts or when spawned

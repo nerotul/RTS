@@ -2,6 +2,8 @@
 
 
 #include "RTSCanvasBase.h"
+#include "UnitBase.h"
+#include "RTSPlayerControllerBase.h"
 
 void ARTSCanvasBase::StartSelection()
 {
@@ -18,14 +20,30 @@ void ARTSCanvasBase::StartSelection()
 
 void ARTSCanvasBase::StopSelection()
 {
+	FVector2D VectorDif = PointA - PointB;
+	float VectorDifLengh = VectorDif.Size();
+
 	bIsDrawing = false;
+
+	if (VectorDifLengh > CanvasDeadZone && IsValid(RTSPlayerController))
+	{
+		RTSPlayerController->ClearSelection();
+
+		for (AUnitBase* Unit : UnitsSelectedWithRectange)
+		{
+			RTSPlayerController->AddUnitToSelection(Unit);
+		}
+	}
+
+	UnitsSelectedWithRectange.Empty();
+
 }
 
 void ARTSCanvasBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerController = GetWorld()->GetFirstPlayerController();
+	RTSPlayerController = Cast<ARTSPlayerControllerBase>(GetWorld()->GetFirstPlayerController());
 
 }
 
@@ -41,7 +59,16 @@ void ARTSCanvasBase::DrawHUD()
 		PointB.X = ScaledCursorLocationX;
 		PointB.Y = ScaledCursorLocationY;
 
-		DrawRect(CanvasColor, PointA.X, PointA.Y, (PointB.X - PointA.X), (PointB.Y - PointA.Y));
+		FVector2D VectorDif = PointA - PointB;
+		float VectorDifLengh = VectorDif.Size();
+
+		if (VectorDifLengh > CanvasDeadZone && IsValid(RTSPlayerController))
+		{
+			DrawRect(CanvasColor, PointA.X, PointA.Y, (PointB.X - PointA.X), (PointB.Y - PointA.Y));
+			GetActorsInSelectionRectangle<AUnitBase>(PointA, PointB, UnitsSelectedWithRectange, true, false);
+
+		}
+
 	}
 }
 
@@ -51,7 +78,11 @@ void ARTSCanvasBase::GetScaledCursorPosition(float& OutScaledCursorLocationX, fl
 	float CursorLocationY = 0.0f;
 	float ViewportScale = 0.0f;
 
-	PlayerController->GetMousePosition(CursorLocationX, CursorLocationY);
+	if (IsValid(RTSPlayerController))
+	{
+		RTSPlayerController->GetMousePosition(CursorLocationX, CursorLocationY);
+
+	}
 	ViewportScale = GEngine->GameViewport->GetDPIScale();
 
 	OutScaledCursorLocationX = CursorLocationX * ViewportScale;

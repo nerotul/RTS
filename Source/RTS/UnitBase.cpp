@@ -5,7 +5,6 @@
 #include "Components/DecalComponent.h"
 #include "RTSPlayerControllerBase.h"
 
-
 // Sets default values
 AUnitBase::AUnitBase()
 {
@@ -17,12 +16,17 @@ AUnitBase::AUnitBase()
 	DecalComponent->SetVisibility(false);
 }
 
+void AUnitBase::IsSelected(bool bIsSelected)
+{
+	DecalComponent->SetVisibility(bIsSelected);
+}
+
 // Called when the game starts or when spawned
 void AUnitBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	OnClicked.AddUniqueDynamic(this, &AUnitBase::OnSelected);
+	OnClicked.AddUniqueDynamic(this, &AUnitBase::OnUnitClicked);
 
 	RTSPlayerController = Cast<ARTSPlayerControllerBase>(GetWorld()->GetFirstPlayerController());
 }
@@ -41,25 +45,18 @@ void AUnitBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AUnitBase::OnSelected(AActor* Target, FKey ButtonPressed)
+void AUnitBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)
 {
-	if (bIsSelected == false)
+	if (ButtonPressed.IsMouseButton())
 	{
-		bIsSelected = true;
-		DecalComponent->SetVisibility(true);
-		if (IsValid(RTSPlayerController))
+		if (DecalComponent->IsVisible() == false)
 		{
 			RTSPlayerController->AddUnitToSelection(this);
 		}
-	}
-	else if (bIsSelected == true)
-	{
-		bIsSelected = false;
-		DecalComponent->SetVisibility(false);
-
-		if (IsValid(RTSPlayerController))
+		else if (DecalComponent->IsVisible() == true)
 		{
 			RTSPlayerController->RemoveUnitFromSelection(this);
 		}
+
 	}
 }

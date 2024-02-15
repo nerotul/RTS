@@ -6,8 +6,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "RTSCanvasBase.h"
 #include "UnitBase.h"
-
-
+#include "Components/DecalComponent.h"
 
 ARTSPlayerControllerBase::ARTSPlayerControllerBase()
 {
@@ -90,13 +89,27 @@ void ARTSPlayerControllerBase::StopSelection()
 
 }
 
+void ARTSPlayerControllerBase::ClearSelection()
+{
+	for (AUnitBase* Unit : UnitSelection)
+	{
+		Unit->IsSelected(false);
+	}
+
+	UnitSelection.Empty();
+}
+
 void ARTSPlayerControllerBase::AddUnitToSelection(AUnitBase* UnitToAdd)
 {
 	UnitSelection.AddUnique(UnitToAdd);
+	UnitToAdd->IsSelected(true);
+
 }
 
 void ARTSPlayerControllerBase::RemoveUnitFromSelection(AUnitBase* UnitToRemove)
 {
 	UnitSelection.Remove(UnitToRemove);
+	UnitToRemove->IsSelected(false);
+
 }
 

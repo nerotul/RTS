@@ -6,7 +6,6 @@
 #include "GameFramework/PlayerController.h"
 #include "RTSPlayerControllerBase.generated.h"
 
-
 class ARTSCameraBase;
 class ARTSCanvasBase;
 class AUnitBase;
@@ -24,6 +23,7 @@ public:
 
 	void RemoveUnitFromSelection(AUnitBase* UnitToRemove);
 
+	void ClearSelection();
 
 protected:
 	virtual void BeginPlay() override;
