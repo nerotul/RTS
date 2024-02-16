@@ -27,6 +27,22 @@ public:
 
 	void IsSelected(bool bIsSelected);
 
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
+	bool bIsPlayersUnit = false;
+
+	UPROPERTY(EditDefaultsOnly)
+	UMaterialInterface* FriendDecalMaterial = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	UMaterialInterface* FoeDecalMaterial = nullptr;
+
+	UFUNCTION(BlueprintCallable)
+	void SetFriendFoeDecal();
+
+	UPROPERTY(BlueprintReadWrite)
+	AActor* TargetActor = nullptr;
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
