@@ -7,14 +7,16 @@
 #include "RTSCanvasBase.h"
 #include "UnitBase.h"
 #include "Components/DecalComponent.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 ARTSPlayerControllerBase::ARTSPlayerControllerBase()
 {
 	SetShowMouseCursor(true);
 	bEnableClickEvents = true;
 	bEnableTouchEvents = true;
-
-	DefaultClickTraceChannel = ECollisionChannel::ECC_Camera;  // Needed for unit to react on LMB click
+	// Needed for unit to react on LMB click
+	DefaultClickTraceChannel = ECollisionChannel::ECC_Camera;  
 }
 
 void ARTSPlayerControllerBase::BeginPlay()
@@ -24,8 +26,8 @@ void ARTSPlayerControllerBase::BeginPlay()
 	FInputModeGameAndUI InputMode;
 	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
 	InputMode.SetHideCursorDuringCapture(false);
-
-	SetInputMode(InputMode);  // Locks cursor inside game window
+	// Locks cursor inside game window
+	SetInputMode(InputMode);  
 
 	AActor* ViewTarget = GetViewTarget();
 	CameraActor = Cast<ARTSCameraBase>(ViewTarget);
@@ -45,6 +47,7 @@ void ARTSPlayerControllerBase::SetupInputComponent()
 	InputComponent->BindAction("ZoomOut", IE_Pressed, this, &ARTSPlayerControllerBase::ZoomCameraOut);
 	InputComponent->BindAction("SelectWithCanvas", IE_Pressed, this, &ARTSPlayerControllerBase::StartSelection);
 	InputComponent->BindAction("SelectWithCanvas", IE_Released, this, &ARTSPlayerControllerBase::StopSelection);
+	InputComponent->BindAction("ExecuteAction", IE_Pressed, this, &ARTSPlayerControllerBase::ExecuteAction);
 
 }
 
@@ -87,6 +90,24 @@ void ARTSPlayerControllerBase::StopSelection()
 		CanvasHUDInstance->StopSelection();
 	}
 
+}
+
+void ARTSPlayerControllerBase::ExecuteAction()
+{
+	FHitResult CursorInteractableHitResult;
+	// GameTraceChannel1 is a custom "Interactable" channel
+	if (!GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, CursorInteractableHitResult))
+	{
+		FHitResult CursorHitResult;
+		GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, CursorHitResult);
+
+		for (AUnitBase* Unit : UnitSelection)
+		{
+			UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(Unit);
+			UnitBlackboard->SetValueAsVector(FName("TargetLocation"), CursorHitResult.Location);
+		}
+
+	}
 }
 
 void ARTSPlayerControllerBase::ClearSelection()

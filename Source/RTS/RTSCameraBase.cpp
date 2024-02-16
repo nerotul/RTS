@@ -107,20 +107,23 @@ void ARTSCameraBase::MoveDown()
 float ARTSCameraBase::GetScaledCursorLocation(float CursorLocationToScale)
 {
 	float ViewportScale = 0.0f;
-	ViewportScale = GEngine->GameViewport->GetDPIScale(); // Getting viewport scale
+	// Getting viewport scale
+	ViewportScale = GEngine->GameViewport->GetDPIScale(); 
 
 	return CursorLocationToScale * ViewportScale;
 }
 
 float ARTSCameraBase::GetViewportSensetiveZone(float ViewportAxis, float ZonePercantage)
 {
-	return ViewportAxis * ZonePercantage;  // Setting which viewport zone percentage will move camera when cursor is in it
+	// Setting which viewport zone percentage will move camera when cursor is in it
+	return ViewportAxis * ZonePercantage;  
 }
 
 float ARTSCameraBase::GetMovementSpeedScaledOnZoom()
 {
 	float SpringArmLenghNormalized = UKismetMathLibrary::NormalizeToRange(SpringArm->TargetArmLength, 1000.0f, 5000.0f);
-	return (SpringArmLenghNormalized * 40.0f + 60.0f); // Creating dependency between zoom scale and camera movement speed
+	// Creating dependency between zoom scale and camera movement speed
+	return (SpringArmLenghNormalized * 40.0f + 60.0f); 
 
 }
 

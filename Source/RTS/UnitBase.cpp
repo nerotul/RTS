@@ -4,6 +4,10 @@
 #include "UnitBase.h"
 #include "Components/DecalComponent.h"
 #include "RTSPlayerControllerBase.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "NavigationSystem.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AUnitBase::AUnitBase()
@@ -21,7 +25,8 @@ void AUnitBase::IsSelected(bool bIsSelected)
 	DecalComponent->SetVisibility(bIsSelected);
 }
 
-void AUnitBase::SetFriendFoeDecal() // Called in BP construction script to visualize friend/foe status in editor
+// Called in BP construction script to visualize friend/foe status in editor
+void AUnitBase::SetFriendFoeDecal() 
 {
 	if (bIsPlayersUnit == true)
 	{
@@ -33,6 +38,20 @@ void AUnitBase::SetFriendFoeDecal() // Called in BP construction script to visua
 		DecalComponent->SetMaterial(0, FoeDecalMaterial);
 		DecalComponent->SetVisibility(true);
 	}
+}
+
+void AUnitBase::Attack()
+{
+	TSubclassOf <UDamageType> DamageType;
+	UGameplayStatics::ApplyDamage(TargetActor, 10.0f, GetController(), this, DamageType);
+}
+
+float AUnitBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	UE_LOG(LogTemp, Warning, TEXT("I'M HIT!"));
+	return DamageAmount;
 }
 
 // Called when the game starts or when spawned
@@ -75,6 +94,20 @@ void AUnitBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)
 	}
 	else if (ButtonPressed.GetFName() == FName("RightMouseButton") && bIsPlayersUnit == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Right clicked!"));
+		UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+
+		for (AUnitBase* Unit : RTSPlayerController->UnitSelection)
+		{
+			FNavLocation RandomNavPoint;
+
+			NavSystem->GetRandomPointInNavigableRadius(GetActorLocation(), 50.0f, RandomNavPoint);
+
+			Unit->TargetActor = this;
+			UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(Unit);
+			UnitBlackboard->SetValueAsVector(FName("TargetLocation"), RandomNavPoint.Location);
+
+			UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 1);
+		}
+
 	}
 }

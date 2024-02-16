@@ -50,5 +50,6 @@ private:
 	void StartSelection();
 	void StopSelection();
 
+	void ExecuteAction();
 
 };
