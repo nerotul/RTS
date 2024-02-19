@@ -4,7 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "Perception/AIPerceptionTypes.h"
 #include "RTSAIControllerBase.generated.h"
+
+class UAIPerceptionComponent;
+class UAISenseConfig_Damage;
+class UAISenseConfig_Sight;
+class AUnitBase;
 
 /**
  * 
@@ -14,9 +20,25 @@ class RTS_API ARTSAIControllerBase : public AAIController
 {
 	GENERATED_BODY()
 
+	ARTSAIControllerBase();
+
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly)
 	UBehaviorTree* BehaviorTree = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	UAIPerceptionComponent* AIPerceptionComponent = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	UAISenseConfig_Damage* DamageSenseConfig = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	UAISenseConfig_Sight* SightSenseConfig = nullptr;
+
+	UFUNCTION()
+	void EnemySensed(AActor* SensedActor, FAIStimulus Stimulus);
+
+	AUnitBase* ControlledUnit = nullptr;
 	
 };

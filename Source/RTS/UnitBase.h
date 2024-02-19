@@ -46,6 +46,13 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
+	float UnitHealth = 20.0f;
+
+	void UnitDeath();
+
+	UPROPERTY(EditDefaultsOnly)
+	UAnimSequence* DeathAnimation = nullptr;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -47,7 +47,7 @@ void ARTSPlayerControllerBase::SetupInputComponent()
 	InputComponent->BindAction("ZoomOut", IE_Pressed, this, &ARTSPlayerControllerBase::ZoomCameraOut);
 	InputComponent->BindAction("SelectWithCanvas", IE_Pressed, this, &ARTSPlayerControllerBase::StartSelection);
 	InputComponent->BindAction("SelectWithCanvas", IE_Released, this, &ARTSPlayerControllerBase::StopSelection);
-	InputComponent->BindAction("ExecuteAction", IE_Pressed, this, &ARTSPlayerControllerBase::ExecuteAction);
+	InputComponent->BindAction("ExecuteAction", IE_Pressed, this, &ARTSPlayerControllerBase::MoveUnit);
 
 }
 
@@ -92,7 +92,7 @@ void ARTSPlayerControllerBase::StopSelection()
 
 }
 
-void ARTSPlayerControllerBase::ExecuteAction()
+void ARTSPlayerControllerBase::MoveUnit()
 {
 	FHitResult CursorInteractableHitResult;
 	// GameTraceChannel1 is a custom "Interactable" channel

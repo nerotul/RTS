@@ -8,6 +8,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "NavigationSystem.h"
 #include "Kismet/GameplayStatics.h"
+#include "Perception/AISense_Damage.h"
 
 // Sets default values
 AUnitBase::AUnitBase()
@@ -48,10 +49,35 @@ void AUnitBase::Attack()
 
 float AUnitBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	if (UnitHealth > 0)
+	{
+		Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	UE_LOG(LogTemp, Warning, TEXT("I'M HIT!"));
+		UnitHealth -= DamageAmount;
+		if (UnitHealth <= 0)
+		{
+			UnitDeath();
+		}
+
+		// Reporting damage event to the AI Perception to start retaliation attack
+		UAISense_Damage::ReportDamageEvent(GetWorld(), this, EventInstigator, DamageAmount, DamageCauser->GetActorLocation(), this->GetActorLocation());
+
+		UE_LOG(LogTemp, Warning, TEXT("I'M HIT!"));
+
+	}
 	return DamageAmount;
+}
+
+void AUnitBase::UnitDeath()
+{
+	if (IsValid(GetController()))
+	{
+		GetController()->UnPossess();
+	}
+
+	GetMesh()->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+	GetMesh()->PlayAnimation(DeathAnimation, false);
+
 }
 
 // Called when the game starts or when spawned
