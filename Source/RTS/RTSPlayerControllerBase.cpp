@@ -9,6 +9,7 @@
 #include "Components/DecalComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "RTSAIControllerBase.h"
 
 ARTSPlayerControllerBase::ARTSPlayerControllerBase()
 {
@@ -105,6 +106,15 @@ void ARTSPlayerControllerBase::MoveUnit()
 		{
 			UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(Unit);
 			UnitBlackboard->SetValueAsVector(FName("TargetLocation"), CursorHitResult.Location);
+			// Changing unit's behavior state to make him move instead of attacking it's target
+			UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 0);
+			ARTSAIControllerBase* UnitController = Cast<ARTSAIControllerBase>(Unit->GetController());
+			if (IsValid(UnitController))
+			{
+				UnitController->SightCooloff();
+				UnitController->ClearFocus(EAIFocusPriority::Default);
+			}
+
 		}
 
 	}
@@ -122,8 +132,12 @@ void ARTSPlayerControllerBase::ClearSelection()
 
 void ARTSPlayerControllerBase::AddUnitToSelection(AUnitBase* UnitToAdd)
 {
-	UnitSelection.AddUnique(UnitToAdd);
-	UnitToAdd->IsSelected(true);
+	if (UnitToAdd->UnitHealth > 0)
+	{
+		UnitSelection.AddUnique(UnitToAdd);
+		UnitToAdd->IsSelected(true);
+
+	}
 
 }
 

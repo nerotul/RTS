@@ -38,6 +38,7 @@ void ARTSAIControllerBase::BeginPlay()
 
 	ControlledUnit = Cast<AUnitBase>(GetPawn());
 	AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ARTSAIControllerBase::EnemySensed);
+
 }
 
 void ARTSAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimulus)
@@ -48,9 +49,24 @@ void ARTSAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimulus
 	{
 		ControlledUnit->TargetActor = SensedActor;
 		UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(this);
-		UnitBlackboard->SetValueAsVector(FName("TargetLocation"), Stimulus.StimulusLocation);
+		UnitBlackboard->SetValueAsVector(FName("TargetLocation"), SensedActor->GetActorLocation());
 		UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 1);
-
+		UE_LOG(LogTemp, Warning, TEXT("Sensed enemy!"));
 	}
+
+}
+
+void ARTSAIControllerBase::SightCooloff()
+{
+	AIPerceptionComponent->SetSenseEnabled(SightSenseConfig->GetSenseImplementation(), false);
+	GetWorldTimerManager().SetTimer(SightCooloffTimer, this, &ARTSAIControllerBase::EnableSightSense, 1.0f, false, 2.0f);
+}
+
+void ARTSAIControllerBase::EnableSightSense()
+{
+	AIPerceptionComponent->SetSenseEnabled(SightSenseConfig->GetSenseImplementation(), true);
+	UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(this);
+	UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 1);
+
 
 }

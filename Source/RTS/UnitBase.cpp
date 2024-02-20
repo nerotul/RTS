@@ -9,6 +9,7 @@
 #include "NavigationSystem.h"
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AISense_Damage.h"
+#include "RTSAIControllerBase.h"
 
 // Sets default values
 AUnitBase::AUnitBase()
@@ -43,8 +44,24 @@ void AUnitBase::SetFriendFoeDecal()
 
 void AUnitBase::Attack()
 {
-	TSubclassOf <UDamageType> DamageType;
-	UGameplayStatics::ApplyDamage(TargetActor, 10.0f, GetController(), this, DamageType);
+	ARTSAIControllerBase* UnitController = Cast<ARTSAIControllerBase>(this->GetController());
+	if (IsValid(UnitController))
+	{
+		UnitController->SetFocus(TargetActor);
+	}
+
+	float DistanceToTarget = GetDistanceTo(TargetActor);
+	if (DistanceToTarget <= 300.0f)
+	{
+		TSubclassOf <UDamageType> DamageType;
+		UGameplayStatics::ApplyDamage(TargetActor, 5.0f, GetController(), this, DamageType);
+	}
+	else
+	{
+		UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(this);
+		UnitBlackboard->SetValueAsVector(FName("TargetLocation"), TargetActor->GetActorLocation());
+
+	}
 }
 
 float AUnitBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -73,11 +90,25 @@ void AUnitBase::UnitDeath()
 	if (IsValid(GetController()))
 	{
 		GetController()->UnPossess();
+		GetWorldTimerManager().SetTimer(DestroyDeadActorTimer, this, &AUnitBase::DestroyDeadActor, 1.0f, false, 5.0f);
+
+		// If unit is friendly and was selected
+		if (bIsPlayersUnit == true && DecalComponent->IsVisible())
+		{
+			RTSPlayerController->RemoveUnitFromSelection(this);
+		}
+
+
 	}
 
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationSingleNode);
 	GetMesh()->PlayAnimation(DeathAnimation, false);
 
+}
+
+void AUnitBase::DestroyDeadActor()
+{
+	Destroy();
 }
 
 // Called when the game starts or when spawned
@@ -131,7 +162,6 @@ void AUnitBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)
 			Unit->TargetActor = this;
 			UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(Unit);
 			UnitBlackboard->SetValueAsVector(FName("TargetLocation"), RandomNavPoint.Location);
-
 			UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 1);
 		}
 

@@ -53,6 +53,11 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	UAnimSequence* DeathAnimation = nullptr;
 
+	FTimerHandle DestroyDeadActorTimer;
+
+	void DestroyDeadActor();
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

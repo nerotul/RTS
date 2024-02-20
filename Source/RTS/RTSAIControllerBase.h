@@ -40,5 +40,14 @@ class RTS_API ARTSAIControllerBase : public AAIController
 	void EnemySensed(AActor* SensedActor, FAIStimulus Stimulus);
 
 	AUnitBase* ControlledUnit = nullptr;
+
+public:
+	// Making unit to ignore enemies for some time while moving
+	void SightCooloff();
+
+	FTimerHandle SightCooloffTimer;
+
+	void EnableSightSense();
+
 	
 };
