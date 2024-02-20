@@ -44,24 +44,8 @@ void AUnitBase::SetFriendFoeDecal()
 
 void AUnitBase::Attack()
 {
-	ARTSAIControllerBase* UnitController = Cast<ARTSAIControllerBase>(this->GetController());
-	if (IsValid(UnitController))
-	{
-		UnitController->SetFocus(TargetActor);
-	}
-
-	float DistanceToTarget = GetDistanceTo(TargetActor);
-	if (DistanceToTarget <= 300.0f)
-	{
-		TSubclassOf <UDamageType> DamageType;
-		UGameplayStatics::ApplyDamage(TargetActor, 5.0f, GetController(), this, DamageType);
-	}
-	else
-	{
-		UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(this);
-		UnitBlackboard->SetValueAsVector(FName("TargetLocation"), TargetActor->GetActorLocation());
-
-	}
+	TSubclassOf <UDamageType> DamageType;
+	UGameplayStatics::ApplyDamage(TargetActor, UnitAttackDamage, GetController(), this, DamageType);
 }
 
 float AUnitBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -97,8 +81,6 @@ void AUnitBase::UnitDeath()
 		{
 			RTSPlayerController->RemoveUnitFromSelection(this);
 		}
-
-
 	}
 
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationSingleNode);
@@ -111,6 +93,26 @@ void AUnitBase::DestroyDeadActor()
 	Destroy();
 }
 
+void AUnitBase::UpdateTargetLocation()
+{
+	if (GetDistanceTo(TargetActor) <= AttackRadius)
+	{
+		ThisUnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 1);
+	}
+	else if(GetDistanceTo(TargetActor) < StopChaseRadius)
+	{
+		ThisUnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 2);
+		ThisUnitBlackboard->SetValueAsVector(FName("TargetLocation"), TargetActor->GetActorLocation());
+	}
+	else if (GetDistanceTo(TargetActor) >= StopChaseRadius)
+	{
+		ThisUnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 0);
+		ThisUnitBlackboard->SetValueAsVector(FName("TargetLocation"), this->GetActorLocation());
+		ThisUnitBlackboard->SetValueAsObject(FName("AttackTargetActor"), nullptr);
+
+	}
+}
+
 // Called when the game starts or when spawned
 void AUnitBase::BeginPlay()
 {
@@ -119,12 +121,19 @@ void AUnitBase::BeginPlay()
 	OnClicked.AddUniqueDynamic(this, &AUnitBase::OnUnitClicked);
 
 	RTSPlayerController = Cast<ARTSPlayerControllerBase>(GetWorld()->GetFirstPlayerController());
+	ThisUnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(this);
+
 }
 
 // Called every frame
 void AUnitBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (IsValid(ThisUnitBlackboard) && TargetActor != nullptr && ThisUnitBlackboard->GetValueAsEnum(FName("ActionEnum")) != 3)
+	{
+		UpdateTargetLocation();
+	}
 
 }
 
@@ -157,12 +166,12 @@ void AUnitBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)
 		{
 			FNavLocation RandomNavPoint;
 
-			NavSystem->GetRandomPointInNavigableRadius(GetActorLocation(), 50.0f, RandomNavPoint);
+			NavSystem->GetRandomPointInNavigableRadius(GetActorLocation(), 200.0f, RandomNavPoint);
 
 			Unit->TargetActor = this;
 			UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(Unit);
 			UnitBlackboard->SetValueAsVector(FName("TargetLocation"), RandomNavPoint.Location);
-			UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 1);
+			UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 2);
 		}
 
 	}

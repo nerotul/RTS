@@ -7,6 +7,7 @@
 #include "UnitBase.generated.h"
 
 class ARTSPlayerControllerBase;
+class UBlackboardComponent;
 
 UCLASS()
 class RTS_API AUnitBase : public ACharacter
@@ -46,7 +47,11 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
+	UPROPERTY(EditDefaultsOnly)
 	float UnitHealth = 20.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float UnitAttackDamage = 3.0f;
 
 	void UnitDeath();
 
@@ -57,6 +62,15 @@ public:
 
 	void DestroyDeadActor();
 
+	UBlackboardComponent* ThisUnitBlackboard = nullptr;
+
+	void UpdateTargetLocation();
+
+	UPROPERTY(EditDefaultsOnly)
+	float AttackRadius = 150.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float StopChaseRadius = 300.0f;
 
 protected:
 	// Called when the game starts or when spawned
