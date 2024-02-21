@@ -21,9 +21,9 @@ class RTS_API ARTSAIControllerBase : public AAIController
 	GENERATED_BODY()
 
 public:
-
 	ARTSAIControllerBase();
 
+protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -38,22 +38,24 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	UAISenseConfig_Sight* SightSenseConfig = nullptr;
 
+	AUnitBase* ControlledUnit = nullptr;
+
+	UBlackboardComponent* UnitBlackboard = nullptr;
+
 	TArray<AActor*> PerceivedActors;
 
 	UFUNCTION()
 	void EnemySensed(AActor* SensedActor, FAIStimulus Stimulus);
 
-	AUnitBase* ControlledUnit = nullptr;
-
-	// Making unit to ignore enemies for some time while moving
-	void SightCooloff();
-
 	FTimerHandle SightCooloffTimer;
 
 	void EnableSightSense();
 
+
+public:
+	// Making unit to ignore enemies for some time while moving
 	void ChooseNewTarget();
 
-
+	void SightCooloff();
 	
 };

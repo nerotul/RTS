@@ -19,6 +19,8 @@ class RTS_API ARTSPlayerControllerBase : public APlayerController
 	GENERATED_BODY()
 
 public:
+	ARTSPlayerControllerBase();
+	
 	void AddUnitToSelection(AUnitBase* UnitToAdd);
 
 	void RemoveUnitFromSelection(AUnitBase* UnitToRemove);
@@ -30,9 +32,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
-private:
-	ARTSPlayerControllerBase();
 
 	virtual void SetupInputComponent() override;
 

@@ -37,6 +37,7 @@ void ARTSAIControllerBase::BeginPlay()
 
 	ControlledUnit = Cast<AUnitBase>(GetPawn());
 	AIPerceptionComponent->OnTargetPerceptionUpdated.AddUniqueDynamic(this, &ARTSAIControllerBase::EnemySensed);
+	UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(this);
 
 }
 
@@ -47,10 +48,16 @@ void ARTSAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimulus
 	if (ControlledUnit != nullptr && IsValid(SensedUnit) && SensedUnit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit)
 	{
 		ControlledUnit->TargetActor = SensedActor;
-		UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(this);
 		UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 2);
 		UnitBlackboard->SetValueAsObject(FName("AttackTargetActor"), SensedUnit);
 	}
+
+}
+
+void ARTSAIControllerBase::EnableSightSense()
+{
+	AIPerceptionComponent->SetSenseEnabled(SightSenseConfig->GetSenseImplementation(), true);
+	UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 2);
 
 }
 
@@ -58,15 +65,6 @@ void ARTSAIControllerBase::SightCooloff()
 {
 	AIPerceptionComponent->SetSenseEnabled(SightSenseConfig->GetSenseImplementation(), false);
 	GetWorldTimerManager().SetTimer(SightCooloffTimer, this, &ARTSAIControllerBase::EnableSightSense, 1.0f, false, 2.0f);
-}
-
-void ARTSAIControllerBase::EnableSightSense()
-{
-	AIPerceptionComponent->SetSenseEnabled(SightSenseConfig->GetSenseImplementation(), true);
-	UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(this);
-	UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 2);
-
-
 }
 
 void ARTSAIControllerBase::ChooseNewTarget()
@@ -79,7 +77,7 @@ void ARTSAIControllerBase::ChooseNewTarget()
 	for (AActor* Actor : PerceivedActors)
 	{
 		AUnitBase* Unit = Cast<AUnitBase>(Actor);
-		if (IsValid(Unit->GetController()) && Unit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit && ControlledUnit->GetDistanceTo(Unit) < MinDistance)
+		if (IsValid(Unit) && Unit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit && ControlledUnit->GetDistanceTo(Unit) < MinDistance)
 		{
 			MinDistance = ControlledUnit->GetDistanceTo(Unit);
 			ClosestEnemy = Unit;
@@ -89,19 +87,18 @@ void ARTSAIControllerBase::ChooseNewTarget()
 	if (ClosestEnemy != nullptr)
 	{
 		ControlledUnit->TargetActor = ClosestEnemy;
-		UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(this);
 		UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 2);
 		UnitBlackboard->SetValueAsObject(FName("AttackTargetActor"), ClosestEnemy);
 
 	}
 	else
 	{
-		UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(this);
 		UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 0);
 		UnitBlackboard->SetValueAsVector(FName("TargetLocation"), ControlledUnit->GetActorLocation());
 		UnitBlackboard->SetValueAsObject(FName("AttackTargetActor"), nullptr);
 
 	}
 
+	PerceivedActors.Empty();
 }
 

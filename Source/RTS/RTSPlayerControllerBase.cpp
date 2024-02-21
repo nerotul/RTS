@@ -36,8 +36,6 @@ void ARTSPlayerControllerBase::BeginPlay()
 	AHUD* HUDInstance = GetHUD();
 	CanvasHUDInstance = Cast<ARTSCanvasBase>(HUDInstance);
 
-	
-
 }
 
 void ARTSPlayerControllerBase::SetupInputComponent()

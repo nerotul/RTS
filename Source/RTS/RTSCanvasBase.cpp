@@ -5,6 +5,14 @@
 #include "UnitBase.h"
 #include "RTSPlayerControllerBase.h"
 
+void ARTSCanvasBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	RTSPlayerController = Cast<ARTSPlayerControllerBase>(GetWorld()->GetFirstPlayerController());
+
+}
+
 void ARTSCanvasBase::StartSelection()
 {
 	float ScaledCursorLocationX = 0.0f;
@@ -40,14 +48,6 @@ void ARTSCanvasBase::StopSelection()
 	}
 
 	UnitsSelectedWithRectange.Empty();
-
-}
-
-void ARTSCanvasBase::BeginPlay()
-{
-	Super::BeginPlay();
-
-	RTSPlayerController = Cast<ARTSPlayerControllerBase>(GetWorld()->GetFirstPlayerController());
 
 }
 

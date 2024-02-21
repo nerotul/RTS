@@ -28,6 +28,28 @@ ARTSCameraBase::ARTSCameraBase()
 
 }
 
+// Called when the game starts or when spawned
+void ARTSCameraBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	PlayerController = GetWorld()->GetFirstPlayerController();
+	PlayerController->SetViewTargetWithBlend(this);
+}
+
+// Called every frame
+void ARTSCameraBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	// For some reason right and down movements react on cursor earlier than others in editor, while it works fine in build
+	MoveLeft();
+	MoveRight();
+	MoveUp();
+	MoveDown();
+
+}
+
 void ARTSCameraBase::MoveLeft()
 {
 	float CursorLocationX = 0.0f;
@@ -124,28 +146,6 @@ float ARTSCameraBase::GetMovementSpeedScaledOnZoom()
 	float SpringArmLenghNormalized = UKismetMathLibrary::NormalizeToRange(SpringArm->TargetArmLength, 1000.0f, 5000.0f);
 	// Creating dependency between zoom scale and camera movement speed
 	return (SpringArmLenghNormalized * 40.0f + 60.0f); 
-
-}
-
-// Called when the game starts or when spawned
-void ARTSCameraBase::BeginPlay()
-{
-	Super::BeginPlay();
-
-	PlayerController = GetWorld()->GetFirstPlayerController();
-	PlayerController->SetViewTargetWithBlend(this);
-}
-
-// Called every frame
-void ARTSCameraBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	// For some reason right and down movements react on cursor earlier than others in editor, while it works fine in build
-	MoveLeft();
-	MoveRight();
-	MoveUp();
-	MoveDown();
 
 }
 

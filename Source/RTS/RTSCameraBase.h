@@ -19,11 +19,15 @@ public:
 	// Sets default values for this actor's properties
 	ARTSCameraBase();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	USceneComponent* RootSceneComponent = nullptr;
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	USpringArmComponent* SpringArm = nullptr;
+	USceneComponent* RootSceneComponent = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UCameraComponent* Camera = nullptr;
@@ -44,14 +48,8 @@ public:
 
 	float GetMovementSpeedScaledOnZoom();
 
-
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	USpringArmComponent* SpringArm = nullptr;
 
 };

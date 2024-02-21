@@ -23,14 +23,14 @@ public:
 
 	virtual void StopSelection() override;
 
+protected:
+	virtual void BeginPlay() override;
+
 	UPROPERTY(EditDefaultsOnly)
 	FLinearColor CanvasColor;
 
 	UPROPERTY(EditDefaultsOnly)
 	float CanvasDeadZone = 100.0f;
-
-protected:
-	virtual void BeginPlay() override;
 
 	virtual void DrawHUD() override;
 	

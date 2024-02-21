@@ -18,6 +18,31 @@ public:
 	// Sets default values for this character's properties
 	AUnitBase();
 
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void Attack();
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
+	bool bIsPlayersUnit = false;
+
+	UPROPERTY(BlueprintReadWrite)
+	AActor* TargetActor = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	float UnitHealth = 20.0f;
+
+	void IsSelected(bool bIsSelected);
+
+protected:
 	UPROPERTY(EditDefaultsOnly)
 	UDecalComponent* DecalComponent = nullptr;
 
@@ -25,11 +50,6 @@ public:
 	void OnUnitClicked(AActor* Target, FKey ButtonPressed);
 
 	ARTSPlayerControllerBase* RTSPlayerController = nullptr;
-
-	void IsSelected(bool bIsSelected);
-
-	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
-	bool bIsPlayersUnit = false;
 
 	UPROPERTY(EditDefaultsOnly)
 	UMaterialInterface* FriendDecalMaterial = nullptr;
@@ -40,15 +60,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetFriendFoeDecal();
 
-	UPROPERTY(BlueprintReadWrite)
-	AActor* TargetActor = nullptr;
-
-	void Attack();
-
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
-
-	UPROPERTY(EditDefaultsOnly)
-	float UnitHealth = 20.0f;
 
 	UPROPERTY(EditDefaultsOnly)
 	float UnitAttackDamage = 3.0f;
@@ -71,16 +83,5 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	float StopChaseRadius = 300.0f;
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };

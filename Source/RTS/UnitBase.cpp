@@ -22,13 +22,83 @@ AUnitBase::AUnitBase()
 
 }
 
+// Called when the game starts or when spawned
+void AUnitBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	OnClicked.AddUniqueDynamic(this, &AUnitBase::OnUnitClicked);
+
+	RTSPlayerController = Cast<ARTSPlayerControllerBase>(GetWorld()->GetFirstPlayerController());
+	ThisUnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(this);
+
+}
+
+// Called every frame
+void AUnitBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (IsValid(ThisUnitBlackboard) && IsValid(GetController()) && TargetActor != nullptr && ThisUnitBlackboard->GetValueAsEnum(FName("ActionEnum")) != 3)
+	{
+		UpdateTargetLocation();
+	}
+
+}
+
+// Called to bind functionality to input
+void AUnitBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+}
+
+void AUnitBase::Attack()
+{
+	TSubclassOf <UDamageType> DamageType;
+	UGameplayStatics::ApplyDamage(TargetActor, UnitAttackDamage, GetController(), this, DamageType);
+}
+
 void AUnitBase::IsSelected(bool bIsSelected)
 {
 	DecalComponent->SetVisibility(bIsSelected);
 }
 
+void AUnitBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)
+{
+	if (ButtonPressed.GetFName() == FName("LeftMouseButton") && bIsPlayersUnit == true)
+	{
+		if (DecalComponent->IsVisible() == false)
+		{
+			RTSPlayerController->AddUnitToSelection(this);
+		}
+		else if (DecalComponent->IsVisible() == true)
+		{
+			RTSPlayerController->RemoveUnitFromSelection(this);
+		}
+
+	}
+	else if (ButtonPressed.GetFName() == FName("RightMouseButton") && bIsPlayersUnit == false)
+	{
+		UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+
+		for (AUnitBase* Unit : RTSPlayerController->UnitSelection)
+		{
+			FNavLocation RandomNavPoint;
+
+			NavSystem->GetRandomPointInNavigableRadius(GetActorLocation(), 200.0f, RandomNavPoint);
+
+			Unit->TargetActor = this;
+			UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(Unit);
+			UnitBlackboard->SetValueAsVector(FName("TargetLocation"), RandomNavPoint.Location);
+			UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 2);
+		}
+
+	}
+}
+
 // Called in BP construction script to visualize friend/foe status in editor
-void AUnitBase::SetFriendFoeDecal() 
+void AUnitBase::SetFriendFoeDecal()
 {
 	if (bIsPlayersUnit == true)
 	{
@@ -40,12 +110,6 @@ void AUnitBase::SetFriendFoeDecal()
 		DecalComponent->SetMaterial(0, FoeDecalMaterial);
 		DecalComponent->SetVisibility(true);
 	}
-}
-
-void AUnitBase::Attack()
-{
-	TSubclassOf <UDamageType> DamageType;
-	UGameplayStatics::ApplyDamage(TargetActor, UnitAttackDamage, GetController(), this, DamageType);
 }
 
 float AUnitBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -115,71 +179,8 @@ void AUnitBase::UpdateTargetLocation()
 	if (IsValid(TargetUnit) && TargetUnit->UnitHealth < 0)
 	{
 		ARTSAIControllerBase* AIController = Cast<ARTSAIControllerBase>(GetController());
+		ThisUnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 0);
 		AIController->ChooseNewTarget();
 	}
 
-}
-
-// Called when the game starts or when spawned
-void AUnitBase::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	OnClicked.AddUniqueDynamic(this, &AUnitBase::OnUnitClicked);
-
-	RTSPlayerController = Cast<ARTSPlayerControllerBase>(GetWorld()->GetFirstPlayerController());
-	ThisUnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(this);
-
-}
-
-// Called every frame
-void AUnitBase::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	if (IsValid(ThisUnitBlackboard) && IsValid(GetController()) && TargetActor != nullptr && ThisUnitBlackboard->GetValueAsEnum(FName("ActionEnum")) != 3)
-	{
-		UpdateTargetLocation();
-	}
-
-}
-
-// Called to bind functionality to input
-void AUnitBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-
-void AUnitBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)
-{
-	if (ButtonPressed.GetFName() == FName("LeftMouseButton") && bIsPlayersUnit == true)
-	{
-		if (DecalComponent->IsVisible() == false)
-		{
-			RTSPlayerController->AddUnitToSelection(this);
-		}
-		else if (DecalComponent->IsVisible() == true)
-		{
-			RTSPlayerController->RemoveUnitFromSelection(this);
-		}
-
-	}
-	else if (ButtonPressed.GetFName() == FName("RightMouseButton") && bIsPlayersUnit == false)
-	{
-		UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
-
-		for (AUnitBase* Unit : RTSPlayerController->UnitSelection)
-		{
-			FNavLocation RandomNavPoint;
-
-			NavSystem->GetRandomPointInNavigableRadius(GetActorLocation(), 200.0f, RandomNavPoint);
-
-			Unit->TargetActor = this;
-			UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(Unit);
-			UnitBlackboard->SetValueAsVector(FName("TargetLocation"), RandomNavPoint.Location);
-			UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 2);
-		}
-
-	}
 }

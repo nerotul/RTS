@@ -14,5 +14,8 @@ class RTS_API UAttackAnimNotifyBase : public UAnimNotify
 {
 	GENERATED_BODY()
 
+public:
+
+protected:
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 };
