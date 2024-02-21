@@ -79,7 +79,7 @@ void ARTSAIControllerBase::ChooseNewTarget()
 	for (AActor* Actor : PerceivedActors)
 	{
 		AUnitBase* Unit = Cast<AUnitBase>(Actor);
-		if (IsValid(Unit) && Unit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit && ControlledUnit->GetDistanceTo(Unit) < MinDistance)
+		if (IsValid(Unit->GetController()) && Unit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit && ControlledUnit->GetDistanceTo(Unit) < MinDistance)
 		{
 			MinDistance = ControlledUnit->GetDistanceTo(Unit);
 			ClosestEnemy = Unit;
