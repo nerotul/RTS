@@ -106,11 +106,18 @@ void AUnitBase::UpdateTargetLocation()
 	}
 	else if (GetDistanceTo(TargetActor) >= StopChaseRadius)
 	{
-		ThisUnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 0);
-		ThisUnitBlackboard->SetValueAsVector(FName("TargetLocation"), this->GetActorLocation());
-		ThisUnitBlackboard->SetValueAsObject(FName("AttackTargetActor"), nullptr);
-
+		ARTSAIControllerBase* AIController = Cast<ARTSAIControllerBase>(GetController());
+		AIController->ChooseNewTarget();
 	}
+
+	AUnitBase* TargetUnit = Cast<AUnitBase>(TargetActor);
+
+	if (IsValid(TargetUnit) && TargetUnit->UnitHealth < 0)
+	{
+		ARTSAIControllerBase* AIController = Cast<ARTSAIControllerBase>(GetController());
+		AIController->ChooseNewTarget();
+	}
+
 }
 
 // Called when the game starts or when spawned
@@ -130,7 +137,7 @@ void AUnitBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (IsValid(ThisUnitBlackboard) && TargetActor != nullptr && ThisUnitBlackboard->GetValueAsEnum(FName("ActionEnum")) != 3)
+	if (IsValid(ThisUnitBlackboard) && IsValid(GetController()) && TargetActor != nullptr && ThisUnitBlackboard->GetValueAsEnum(FName("ActionEnum")) != 3)
 	{
 		UpdateTargetLocation();
 	}

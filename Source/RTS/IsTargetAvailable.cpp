@@ -5,7 +5,8 @@
 #include "AIController.h"
 #include "UnitBase.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
-#include "BehaviorTree/BlackboardComponent.h"
+#include "RTSAIControllerBase.h"
+#include "Perception/AIPerceptionComponent.h"
 
 UIsTargetAvailable::UIsTargetAvailable(const FObjectInitializer& ObjInit) : Super(ObjInit)
 {
@@ -24,8 +25,7 @@ bool UIsTargetAvailable::CalculateRawConditionValue(UBehaviorTreeComponent& Owne
 		return true;
 	}
 	else
-	{
-		Unit->TargetActor = nullptr;
+	{	
 		return false;
 	}
 }
