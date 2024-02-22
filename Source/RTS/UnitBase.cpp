@@ -82,14 +82,8 @@ void AUnitBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)
 	}
 	else if (ButtonPressed.GetFName() == FName("RightMouseButton") && bIsPlayersUnit == false)
 	{
-		//UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
-
 		for (AUnitBase* Unit : RTSPlayerController->UnitSelection)
 		{
-			//FNavLocation RandomNavPoint;
-
-			//NavSystem->GetRandomPointInNavigableRadius(GetActorLocation(), 190.0f, RandomNavPoint);
-
 			Unit->SetAttackTargetActor(this);
 		}
 

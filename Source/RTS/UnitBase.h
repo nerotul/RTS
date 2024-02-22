@@ -38,7 +38,7 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	AActor* TargetActor = nullptr;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float UnitHealth = 20.0f;
 
 	void IsSelected(bool bIsSelected);
@@ -66,7 +66,7 @@ protected:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	UPROPERTY(EditDefaultsOnly)
-	float UnitAttackDamage = 1.0f;
+	float UnitAttackDamage = 5.0f;
 
 	void UnitDeath();
 

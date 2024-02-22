@@ -43,24 +43,25 @@ void ARTSAIControllerBase::BeginPlay()
 
 void ARTSAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimulus)
 {
-	if (Stimulus.WasSuccessfullySensed() == true)
+	AUnitBase* SensedUnit = Cast<AUnitBase>(SensedActor);
+
+	if (ControlledUnit != nullptr && IsValid(SensedUnit) && IsValid(SensedUnit->GetController()) && SensedUnit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit)
 	{
-		AUnitBase* SensedUnit = Cast<AUnitBase>(SensedActor);
-
-		if (ControlledUnit != nullptr && IsValid(SensedUnit) && IsValid(SensedUnit->GetController()) && SensedUnit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit)
-		{
-			ControlledUnit->SetAttackTargetActor(SensedUnit);
-			UE_LOG(LogTemp, Warning, TEXT("Sensed!"));
-
-		}
+		ControlledUnit->SetAttackTargetActor(SensedUnit);
 
 	}
-	else
-	{
-		ControlledUnit->SetAttackTargetActor(nullptr);
-		UE_LOG(LogTemp, Warning, TEXT("Lost!"));
 
-	}
+	//if (Stimulus.WasSuccessfullySensed() == true)
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("Sensed!"));
+
+	//}
+	//else if(ControlledUnit != nullptr)
+	//{
+	//	ControlledUnit->SetAttackTargetActor(nullptr);
+	//	UE_LOG(LogTemp, Warning, TEXT("Lost!"));
+
+	//}
 
 
 }
@@ -69,7 +70,7 @@ void ARTSAIControllerBase::EnableSightSense()
 {
 	AIPerceptionComponent->SetSenseEnabled(SightSenseConfig->GetSenseImplementation(), true);
 	UnitBlackboard->SetValueAsBool(FName("bIsRepositioning"), false);
-	ChooseNewTarget();
+	//ChooseNewTarget();
 }
 
 void ARTSAIControllerBase::RepositionUnit()
