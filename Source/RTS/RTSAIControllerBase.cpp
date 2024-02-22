@@ -22,8 +22,6 @@ ARTSAIControllerBase::ARTSAIControllerBase()
 	SightSenseConfig->DetectionByAffiliation.bDetectNeutrals = true;
 	SightSenseConfig->DetectionByAffiliation.bDetectFriendlies = true;
 	AIPerceptionComponent->ConfigureSense(*SightSenseConfig);
-
-	AIPerceptionComponent->SetDominantSense(DamageSenseConfig->GetSenseImplementation());
 }
 
 void ARTSAIControllerBase::BeginPlay()
@@ -45,39 +43,34 @@ void ARTSAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimulus
 {
 	AUnitBase* SensedUnit = Cast<AUnitBase>(SensedActor);
 
-	if (ControlledUnit != nullptr && IsValid(SensedUnit) && IsValid(SensedUnit->GetController()) && SensedUnit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit)
+	//if (ControlledUnit != nullptr && IsValid(SensedUnit) && IsValid(SensedUnit->GetController()) && SensedUnit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit)
+	//{
+	//	ControlledUnit->SetAttackTargetActor(SensedUnit);
+
+	//}
+
+	if (Stimulus.WasSuccessfullySensed() == true)
 	{
-		ControlledUnit->SetAttackTargetActor(SensedUnit);
+		ControlledUnit->SetAttackTargetActor(SensedActor);
+		UE_LOG(LogTemp, Warning, TEXT("Sensed!"));
 
 	}
-
-	//if (Stimulus.WasSuccessfullySensed() == true)
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("Sensed!"));
-
-	//}
-	//else if(ControlledUnit != nullptr)
-	//{
-	//	ControlledUnit->SetAttackTargetActor(nullptr);
-	//	UE_LOG(LogTemp, Warning, TEXT("Lost!"));
-
-	//}
-
-
+	else if(Stimulus.WasSuccessfullySensed() == false && ControlledUnit != nullptr)
+	{
+		ControlledUnit->SetAttackTargetActor(nullptr);
+		UE_LOG(LogTemp, Warning, TEXT("Lost!"));
+	}
 }
 
-void ARTSAIControllerBase::EnableSightSense()
+void ARTSAIControllerBase::FinishRepositionUnit()
 {
-	AIPerceptionComponent->SetSenseEnabled(SightSenseConfig->GetSenseImplementation(), true);
 	UnitBlackboard->SetValueAsBool(FName("bIsRepositioning"), false);
-	//ChooseNewTarget();
 }
 
 void ARTSAIControllerBase::RepositionUnit()
 {
-	AIPerceptionComponent->SetSenseEnabled(SightSenseConfig->GetSenseImplementation(), false);
 	UnitBlackboard->SetValueAsBool(FName("bIsRepositioning"), true);
-	GetWorldTimerManager().SetTimer(SightCooloffTimer, this, &ARTSAIControllerBase::EnableSightSense, 1.0f, false, 1.5f);
+	GetWorldTimerManager().SetTimer(SightCooloffTimer, this, &ARTSAIControllerBase::FinishRepositionUnit, 1.0f, false, 0.5f);
 }
 
 void ARTSAIControllerBase::ChooseNewTarget()

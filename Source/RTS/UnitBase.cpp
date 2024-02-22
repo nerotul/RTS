@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AISense_Damage.h"
 #include "RTSAIControllerBase.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AUnitBase::AUnitBase()
@@ -39,12 +40,6 @@ void AUnitBase::BeginPlay()
 void AUnitBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (TargetActor && !UAIBlueprintHelperLibrary::GetAIController(TargetActor))
-	{
-		// Checking if target is dead and if it is, looking for a new target
-		ThisUnitAIController->ChooseNewTarget();
-	}
 
 }
 
@@ -146,6 +141,9 @@ void AUnitBase::UnitDeath()
 		{
 			RTSPlayerController->RemoveUnitFromSelection(this);
 		}
+
+		GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	}
 
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationSingleNode);

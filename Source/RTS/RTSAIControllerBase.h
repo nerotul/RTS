@@ -49,7 +49,7 @@ protected:
 
 	FTimerHandle SightCooloffTimer;
 
-	void EnableSightSense();
+	void FinishRepositionUnit();
 
 
 public:
