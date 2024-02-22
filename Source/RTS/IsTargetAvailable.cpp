@@ -6,7 +6,6 @@
 #include "UnitBase.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "RTSAIControllerBase.h"
-#include "Perception/AIPerceptionComponent.h"
 
 UIsTargetAvailable::UIsTargetAvailable(const FObjectInitializer& ObjInit) : Super(ObjInit)
 {
@@ -16,8 +15,8 @@ bool UIsTargetAvailable::CalculateRawConditionValue(UBehaviorTreeComponent& Owne
 {
 	//Super::CalculateRawConditionValue(OwnerComp, NodeMemory);
 	AAIController* AIController = OwnerComp.GetAIOwner();
-	AUnitBase* Unit = Cast<AUnitBase>(AIController->GetPawn());
-	AAIController* TargetController = UAIBlueprintHelperLibrary::GetAIController(Unit->TargetActor);
+	AUnitBase* OwnerUnit = Cast<AUnitBase>(AIController->GetPawn());
+	AAIController* TargetController = UAIBlueprintHelperLibrary::GetAIController(OwnerUnit->TargetActor);
 
 	// No controller means that target is dead and unit should stop attacking it
 	if (IsValid(TargetController))

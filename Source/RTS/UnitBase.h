@@ -8,6 +8,7 @@
 
 class ARTSPlayerControllerBase;
 class UBlackboardComponent;
+class ARTSAIControllerBase;
 
 UCLASS()
 class RTS_API AUnitBase : public ACharacter
@@ -42,6 +43,8 @@ public:
 
 	void IsSelected(bool bIsSelected);
 
+	void SetAttackTargetActor(AActor* NewTargetActor);
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	UDecalComponent* DecalComponent = nullptr;
@@ -63,7 +66,7 @@ protected:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	UPROPERTY(EditDefaultsOnly)
-	float UnitAttackDamage = 3.0f;
+	float UnitAttackDamage = 1.0f;
 
 	void UnitDeath();
 
@@ -76,12 +79,6 @@ protected:
 
 	UBlackboardComponent* ThisUnitBlackboard = nullptr;
 
-	void UpdateTargetLocation();
-
-	UPROPERTY(EditDefaultsOnly)
-	float AttackRadius = 150.0f;
-
-	UPROPERTY(EditDefaultsOnly)
-	float StopChaseRadius = 300.0f;
+	ARTSAIControllerBase* ThisUnitAIController = nullptr;
 
 };

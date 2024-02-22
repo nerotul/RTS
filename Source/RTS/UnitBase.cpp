@@ -30,6 +30,7 @@ void AUnitBase::BeginPlay()
 	OnClicked.AddUniqueDynamic(this, &AUnitBase::OnUnitClicked);
 
 	RTSPlayerController = Cast<ARTSPlayerControllerBase>(GetWorld()->GetFirstPlayerController());
+	ThisUnitAIController = Cast<ARTSAIControllerBase>(GetController());
 	ThisUnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(this);
 
 }
@@ -39,9 +40,10 @@ void AUnitBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (IsValid(ThisUnitBlackboard) && IsValid(GetController()) && TargetActor != nullptr && ThisUnitBlackboard->GetValueAsEnum(FName("ActionEnum")) != 3)
+	if (TargetActor && !UAIBlueprintHelperLibrary::GetAIController(TargetActor))
 	{
-		UpdateTargetLocation();
+		// Checking if target is dead and if it is, looking for a new target
+		ThisUnitAIController->ChooseNewTarget();
 	}
 
 }
@@ -80,21 +82,25 @@ void AUnitBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)
 	}
 	else if (ButtonPressed.GetFName() == FName("RightMouseButton") && bIsPlayersUnit == false)
 	{
-		UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
+		//UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetCurrent(GetWorld());
 
 		for (AUnitBase* Unit : RTSPlayerController->UnitSelection)
 		{
-			FNavLocation RandomNavPoint;
+			//FNavLocation RandomNavPoint;
 
-			NavSystem->GetRandomPointInNavigableRadius(GetActorLocation(), 200.0f, RandomNavPoint);
+			//NavSystem->GetRandomPointInNavigableRadius(GetActorLocation(), 190.0f, RandomNavPoint);
 
-			Unit->TargetActor = this;
-			UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(Unit);
-			UnitBlackboard->SetValueAsVector(FName("TargetLocation"), RandomNavPoint.Location);
-			UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 2);
+			Unit->SetAttackTargetActor(this);
 		}
 
 	}
+}
+
+void AUnitBase::SetAttackTargetActor(AActor* NewTargetActor)
+{
+	TargetActor = NewTargetActor;
+	ThisUnitBlackboard->SetValueAsObject(FName("AttackTargetActor"), NewTargetActor);
+
 }
 
 // Called in BP construction script to visualize friend/foe status in editor
@@ -130,6 +136,7 @@ float AUnitBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 		UE_LOG(LogTemp, Warning, TEXT("I'M HIT!"));
 
 	}
+
 	return DamageAmount;
 }
 
@@ -155,32 +162,4 @@ void AUnitBase::UnitDeath()
 void AUnitBase::DestroyDeadActor()
 {
 	Destroy();
-}
-
-void AUnitBase::UpdateTargetLocation()
-{
-	if (GetDistanceTo(TargetActor) <= AttackRadius)
-	{
-		ThisUnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 1);
-	}
-	else if(GetDistanceTo(TargetActor) < StopChaseRadius)
-	{
-		ThisUnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 2);
-		ThisUnitBlackboard->SetValueAsVector(FName("TargetLocation"), TargetActor->GetActorLocation());
-	}
-	else if (GetDistanceTo(TargetActor) >= StopChaseRadius)
-	{
-		ARTSAIControllerBase* AIController = Cast<ARTSAIControllerBase>(GetController());
-		AIController->ChooseNewTarget();
-	}
-
-	AUnitBase* TargetUnit = Cast<AUnitBase>(TargetActor);
-
-	if (IsValid(TargetUnit) && TargetUnit->UnitHealth < 0)
-	{
-		ARTSAIControllerBase* AIController = Cast<ARTSAIControllerBase>(GetController());
-		ThisUnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 0);
-		AIController->ChooseNewTarget();
-	}
-
 }

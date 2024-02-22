@@ -104,16 +104,11 @@ void ARTSPlayerControllerBase::MoveUnit()
 		{
 			UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(Unit);
 			UnitBlackboard->SetValueAsVector(FName("TargetLocation"), CursorHitResult.Location);
-			// Changing unit's behavior state to make him move instead of attacking it's target
-			if (UnitBlackboard->GetValueAsEnum(FName("ActionEnum")) != 3)
-			{
-				UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 3);
 
-			}
 			ARTSAIControllerBase* UnitController = Cast<ARTSAIControllerBase>(Unit->GetController());
 			if (IsValid(UnitController))
 			{
-				UnitController->SightCooloff();
+				UnitController->RepositionUnit();
 			}
 
 		}

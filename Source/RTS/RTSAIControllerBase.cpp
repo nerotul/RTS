@@ -43,28 +43,40 @@ void ARTSAIControllerBase::BeginPlay()
 
 void ARTSAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimulus)
 {
-	AUnitBase* SensedUnit = Cast<AUnitBase>(SensedActor);
-
-	if (ControlledUnit != nullptr && IsValid(SensedUnit) && SensedUnit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit)
+	if (Stimulus.WasSuccessfullySensed() == true)
 	{
-		ControlledUnit->TargetActor = SensedActor;
-		UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 2);
-		UnitBlackboard->SetValueAsObject(FName("AttackTargetActor"), SensedUnit);
+		AUnitBase* SensedUnit = Cast<AUnitBase>(SensedActor);
+
+		if (ControlledUnit != nullptr && IsValid(SensedUnit) && IsValid(SensedUnit->GetController()) && SensedUnit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit)
+		{
+			ControlledUnit->SetAttackTargetActor(SensedUnit);
+			UE_LOG(LogTemp, Warning, TEXT("Sensed!"));
+
+		}
+
 	}
+	else
+	{
+		ControlledUnit->SetAttackTargetActor(nullptr);
+		UE_LOG(LogTemp, Warning, TEXT("Lost!"));
+
+	}
+
 
 }
 
 void ARTSAIControllerBase::EnableSightSense()
 {
 	AIPerceptionComponent->SetSenseEnabled(SightSenseConfig->GetSenseImplementation(), true);
-	UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 2);
-
+	UnitBlackboard->SetValueAsBool(FName("bIsRepositioning"), false);
+	ChooseNewTarget();
 }
 
-void ARTSAIControllerBase::SightCooloff()
+void ARTSAIControllerBase::RepositionUnit()
 {
 	AIPerceptionComponent->SetSenseEnabled(SightSenseConfig->GetSenseImplementation(), false);
-	GetWorldTimerManager().SetTimer(SightCooloffTimer, this, &ARTSAIControllerBase::EnableSightSense, 1.0f, false, 2.0f);
+	UnitBlackboard->SetValueAsBool(FName("bIsRepositioning"), true);
+	GetWorldTimerManager().SetTimer(SightCooloffTimer, this, &ARTSAIControllerBase::EnableSightSense, 1.0f, false, 1.5f);
 }
 
 void ARTSAIControllerBase::ChooseNewTarget()
@@ -77,26 +89,18 @@ void ARTSAIControllerBase::ChooseNewTarget()
 	for (AActor* Actor : PerceivedActors)
 	{
 		AUnitBase* Unit = Cast<AUnitBase>(Actor);
-		if (IsValid(Unit) && Unit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit && ControlledUnit->GetDistanceTo(Unit) < MinDistance)
+		if (IsValid(Unit) && IsValid(Unit->GetController()) && Unit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit && ControlledUnit->GetDistanceTo(Unit) < MinDistance)
 		{
 			MinDistance = ControlledUnit->GetDistanceTo(Unit);
 			ClosestEnemy = Unit;
 		}
 	}
 
-	if (ClosestEnemy != nullptr)
-	{
-		ControlledUnit->TargetActor = ClosestEnemy;
-		UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 2);
-		UnitBlackboard->SetValueAsObject(FName("AttackTargetActor"), ClosestEnemy);
+	ControlledUnit->SetAttackTargetActor(ClosestEnemy);
 
-	}
-	else
+	if (ClosestEnemy == nullptr)
 	{
-		UnitBlackboard->SetValueAsEnum(FName("ActionEnum"), 0);
 		UnitBlackboard->SetValueAsVector(FName("TargetLocation"), ControlledUnit->GetActorLocation());
-		UnitBlackboard->SetValueAsObject(FName("AttackTargetActor"), nullptr);
-
 	}
 
 	PerceivedActors.Empty();
