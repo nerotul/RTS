@@ -113,8 +113,8 @@ float AUnitBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 	{
 		Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-		UnitHealth -= DamageAmount;
-		if (UnitHealth <= 0)
+		UnitCurrentHealth -= DamageAmount;
+		if (UnitCurrentHealth <= 0)
 		{
 			UnitDeath();
 		}

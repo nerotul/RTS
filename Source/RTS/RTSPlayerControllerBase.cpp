@@ -128,7 +128,7 @@ void ARTSPlayerControllerBase::ClearSelection()
 
 void ARTSPlayerControllerBase::AddUnitToSelection(AUnitBase* UnitToAdd)
 {
-	if (UnitToAdd->UnitHealth > 0)
+	if (UnitToAdd->UnitCurrentHealth > 0)
 	{
 		UnitSelection.AddUnique(UnitToAdd);
 		UnitToAdd->IsSelected(true);

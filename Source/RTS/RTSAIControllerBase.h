@@ -45,7 +45,7 @@ protected:
 	TArray<AActor*> PerceivedActors;
 
 	UFUNCTION()
-	void EnemySensed(AActor* SensedActor, FAIStimulus Stimulus);
+	virtual void EnemySensed(AActor* SensedActor, FAIStimulus Stimulus);
 
 	FTimerHandle SightCooloffTimer;
 
@@ -53,7 +53,7 @@ protected:
 
 
 public:
-	void ChooseNewTarget();
+	virtual void ChooseNewTarget();
 
 	// Making unit to ignore enemies for some time while moving
 	void RepositionUnit();

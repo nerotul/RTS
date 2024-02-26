@@ -30,7 +30,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void Attack();
+	virtual void Attack();
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
 	bool bIsPlayersUnit = false;
@@ -39,7 +39,10 @@ public:
 	AActor* TargetActor = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float UnitHealth = 20.0f;
+	float UnitCurrentHealth = 20.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float UnitMaxHealth = 20.0f;
 
 	void IsSelected(bool bIsSelected);
 
@@ -52,7 +55,7 @@ protected:
 	UDecalComponent* DecalComponent = nullptr;
 
 	UFUNCTION()
-	void OnUnitClicked(AActor* Target, FKey ButtonPressed);
+	virtual void OnUnitClicked(AActor* Target, FKey ButtonPressed);
 
 	ARTSPlayerControllerBase* RTSPlayerController = nullptr;
 

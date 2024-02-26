@@ -43,14 +43,13 @@ void ARTSAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimulus
 {
 	AUnitBase* SensedUnit = Cast<AUnitBase>(SensedActor);
 
-	if (Stimulus.WasSuccessfullySensed() == true && IsValid(SensedUnit) && SensedUnit->bIsAlive == true)
+	if (Stimulus.WasSuccessfullySensed() == true && IsValid(SensedUnit) && SensedUnit->bIsAlive == true && SensedUnit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit && ControlledUnit->TargetActor == nullptr)
 	{
 		ControlledUnit->SetAttackTargetActor(SensedUnit);
 
 	}
-	else if(Stimulus.WasSuccessfullySensed() == false && IsValid(SensedUnit) && SensedUnit->bIsAlive == true)
+	else if (Stimulus.WasSuccessfullySensed() == false && IsValid(SensedUnit) && SensedUnit->bIsAlive == true && SensedUnit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit)
 	{
-		ControlledUnit->SetAttackTargetActor(nullptr);
 		ChooseNewTarget();
 	}
 }
