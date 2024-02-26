@@ -45,6 +45,8 @@ public:
 
 	void SetAttackTargetActor(AActor* NewTargetActor);
 
+	bool bIsAlive = true;
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	UDecalComponent* DecalComponent = nullptr;

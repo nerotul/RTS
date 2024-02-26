@@ -63,7 +63,7 @@ void AUnitBase::IsSelected(bool bIsSelected)
 
 void AUnitBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)
 {
-	if (ButtonPressed.GetFName() == FName("LeftMouseButton") && bIsPlayersUnit == true)
+	if (ButtonPressed.GetFName() == FName("LeftMouseButton") && bIsPlayersUnit == true && bIsAlive == true)
 	{
 		if (DecalComponent->IsVisible() == false)
 		{
@@ -75,7 +75,7 @@ void AUnitBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)
 		}
 
 	}
-	else if (ButtonPressed.GetFName() == FName("RightMouseButton") && bIsPlayersUnit == false)
+	else if (ButtonPressed.GetFName() == FName("RightMouseButton") && bIsPlayersUnit == false && bIsAlive == true)
 	{
 		for (AUnitBase* Unit : RTSPlayerController->UnitSelection)
 		{
@@ -109,7 +109,7 @@ void AUnitBase::SetFriendFoeDecal()
 
 float AUnitBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (UnitHealth > 0)
+	if (bIsAlive == true)
 	{
 		Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
@@ -122,8 +122,6 @@ float AUnitBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 		// Reporting damage event to the AI Perception to start retaliation attack
 		UAISense_Damage::ReportDamageEvent(GetWorld(), this, EventInstigator, DamageAmount, DamageCauser->GetActorLocation(), this->GetActorLocation());
 
-		UE_LOG(LogTemp, Warning, TEXT("I'M HIT!"));
-
 	}
 
 	return DamageAmount;
@@ -133,7 +131,8 @@ void AUnitBase::UnitDeath()
 {
 	if (IsValid(GetController()))
 	{
-		GetController()->UnPossess();
+		GetController()->Destroy();
+		bIsAlive = false;
 		GetWorldTimerManager().SetTimer(DestroyDeadActorTimer, this, &AUnitBase::DestroyDeadActor, 1.0f, false, 5.0f);
 
 		// If unit is friendly and was selected

@@ -39,7 +39,7 @@ void ARTSCanvasBase::StopSelection()
 
 		for (AUnitBase* Unit : UnitsSelectedWithRectange)
 		{
-			if (Unit->bIsPlayersUnit == true)
+			if (Unit->bIsPlayersUnit == true && Unit->bIsAlive == true)
 			{
 				RTSPlayerController->AddUnitToSelection(Unit);
 

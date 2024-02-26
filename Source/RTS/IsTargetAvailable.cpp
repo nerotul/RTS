@@ -15,16 +15,18 @@ bool UIsTargetAvailable::CalculateRawConditionValue(UBehaviorTreeComponent& Owne
 {
 	//Super::CalculateRawConditionValue(OwnerComp, NodeMemory);
 	AAIController* AIController = OwnerComp.GetAIOwner();
+	ARTSAIControllerBase* OwnerAIController = Cast<ARTSAIControllerBase>(AIController);
 	AUnitBase* OwnerUnit = Cast<AUnitBase>(AIController->GetPawn());
-	AAIController* TargetController = UAIBlueprintHelperLibrary::GetAIController(OwnerUnit->TargetActor);
+	AUnitBase* TargetUnit = Cast<AUnitBase>(OwnerUnit->TargetActor);
 
 	// No controller means that target is dead and unit should stop attacking it
-	if (IsValid(TargetController))
+	if (TargetUnit->bIsAlive == true)
 	{
 		return true;
 	}
 	else
 	{	
+		OwnerAIController->ChooseNewTarget();
 		return false;
 	}
 }

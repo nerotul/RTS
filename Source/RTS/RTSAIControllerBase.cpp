@@ -43,22 +43,15 @@ void ARTSAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimulus
 {
 	AUnitBase* SensedUnit = Cast<AUnitBase>(SensedActor);
 
-	//if (ControlledUnit != nullptr && IsValid(SensedUnit) && IsValid(SensedUnit->GetController()) && SensedUnit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit)
-	//{
-	//	ControlledUnit->SetAttackTargetActor(SensedUnit);
-
-	//}
-
-	if (Stimulus.WasSuccessfullySensed() == true)
+	if (Stimulus.WasSuccessfullySensed() == true && IsValid(SensedUnit) && SensedUnit->bIsAlive == true)
 	{
-		ControlledUnit->SetAttackTargetActor(SensedActor);
-		UE_LOG(LogTemp, Warning, TEXT("Sensed!"));
+		ControlledUnit->SetAttackTargetActor(SensedUnit);
 
 	}
-	else if(Stimulus.WasSuccessfullySensed() == false && ControlledUnit != nullptr)
+	else if(Stimulus.WasSuccessfullySensed() == false && IsValid(SensedUnit) && SensedUnit->bIsAlive == true)
 	{
 		ControlledUnit->SetAttackTargetActor(nullptr);
-		UE_LOG(LogTemp, Warning, TEXT("Lost!"));
+		ChooseNewTarget();
 	}
 }
 
@@ -83,7 +76,7 @@ void ARTSAIControllerBase::ChooseNewTarget()
 	for (AActor* Actor : PerceivedActors)
 	{
 		AUnitBase* Unit = Cast<AUnitBase>(Actor);
-		if (IsValid(Unit) && IsValid(Unit->GetController()) && Unit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit && ControlledUnit->GetDistanceTo(Unit) < MinDistance)
+		if (IsValid(Unit) && Unit->bIsAlive == true && Unit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit && ControlledUnit->GetDistanceTo(Unit) < MinDistance)
 		{
 			MinDistance = ControlledUnit->GetDistanceTo(Unit);
 			ClosestEnemy = Unit;
