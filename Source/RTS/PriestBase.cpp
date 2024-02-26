@@ -44,12 +44,7 @@ void APriestBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)
 
 void APriestBase::Attack()
 {
-	AUnitBase* TargetUnit = Cast<AUnitBase>(TargetActor);
-	if (TargetUnit->UnitCurrentHealth < TargetUnit->UnitMaxHealth)
-	{
-		TSubclassOf <UDamageType> DamageType;
-		UGameplayStatics::ApplyDamage(TargetActor, -UnitAttackDamage, GetController(), this, DamageType);
-
-	}
+	TSubclassOf <UDamageType> DamageType;
+	UGameplayStatics::ApplyDamage(TargetActor, -UnitAttackDamage, GetController(), this, DamageType);
 
 }

@@ -17,6 +17,7 @@ class RTS_API APriestAIControllerBase : public ARTSAIControllerBase
 protected:
 	virtual void BeginPlay() override;
 
+	// Looks for an ally with wounds
 	virtual void EnemySensed(AActor* SensedActor, FAIStimulus Stimulus) override;
 
 	virtual void ChooseNewTarget() override;
