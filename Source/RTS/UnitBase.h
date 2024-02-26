@@ -48,6 +48,7 @@ public:
 
 	void SetAttackTargetActor(AActor* NewTargetActor);
 
+	UPROPERTY(BlueprintReadOnly)
 	bool bIsAlive = true;
 
 protected:
