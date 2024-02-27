@@ -131,6 +131,7 @@ void AUnitBase::UnitDeath()
 {
 	if (IsValid(GetController()))
 	{
+		OnUnitDead.Broadcast(bIsPlayersUnit);
 		GetController()->Destroy();
 		bIsAlive = false;
 		GetWorldTimerManager().SetTimer(DestroyDeadActorTimer, this, &AUnitBase::DestroyDeadActor, 1.0f, false, 5.0f);

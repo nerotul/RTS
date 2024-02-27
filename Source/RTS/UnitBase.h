@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "UnitBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnitDead, bool, bIsPlayersUnit);
+
 class ARTSPlayerControllerBase;
 class UBlackboardComponent;
 class ARTSAIControllerBase;
@@ -50,6 +52,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsAlive = true;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnUnitDead OnUnitDead;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
