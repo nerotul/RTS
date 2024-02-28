@@ -31,9 +31,7 @@ void AUnitBase::BeginPlay()
 	OnClicked.AddUniqueDynamic(this, &AUnitBase::OnUnitClicked);
 
 	RTSPlayerController = Cast<ARTSPlayerControllerBase>(GetWorld()->GetFirstPlayerController());
-	ThisUnitAIController = Cast<ARTSAIControllerBase>(GetController());
-	ThisUnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(this);
-
+	ThisUnitAIController = Cast<ARTSAIControllerBase>(GetController());	
 }
 
 // Called every frame
@@ -87,8 +85,16 @@ void AUnitBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)
 
 void AUnitBase::SetAttackTargetActor(AActor* NewTargetActor)
 {
-	TargetActor = NewTargetActor;
-	ThisUnitBlackboard->SetValueAsObject(FName("AttackTargetActor"), NewTargetActor);
+	if (ThisUnitAIController->UnitBlackboard != nullptr)
+	{
+		TargetActor = NewTargetActor;
+		ThisUnitAIController->UnitBlackboard->SetValueAsObject(FName("AttackTargetActor"), NewTargetActor);
+
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Blackboard not found!"));
+	}
 
 }
 

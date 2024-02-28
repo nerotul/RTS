@@ -23,6 +23,7 @@ class RTS_API ARTSAIControllerBase : public AAIController
 public:
 	ARTSAIControllerBase();
 
+	UBlackboardComponent* UnitBlackboard = nullptr;
 protected:
 	virtual void BeginPlay() override;
 
@@ -39,8 +40,6 @@ protected:
 	UAISenseConfig_Sight* SightSenseConfig = nullptr;
 
 	AUnitBase* ControlledUnit = nullptr;
-
-	UBlackboardComponent* UnitBlackboard = nullptr;
 
 	TArray<AActor*> PerceivedActors;
 

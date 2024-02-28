@@ -88,8 +88,6 @@ protected:
 
 	void DestroyDeadActor();
 
-	UBlackboardComponent* ThisUnitBlackboard = nullptr;
-
 	ARTSAIControllerBase* ThisUnitAIController = nullptr;
 
 };
