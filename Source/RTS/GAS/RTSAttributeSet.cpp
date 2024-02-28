@@ -3,3 +3,6 @@
 
 #include "RTSAttributeSet.h"
 
+URTSAttributeSet::URTSAttributeSet()
+{
+}

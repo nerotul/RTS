@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "AbilitySystemInterface.h"
 #include "UnitBase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnitDead, bool, bIsPlayersUnit);
@@ -11,9 +12,13 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnitDead, bool, bIsPlayersUnit);
 class ARTSPlayerControllerBase;
 class UBlackboardComponent;
 class ARTSAIControllerBase;
+class URTSAbilitySystemComponent;
+class UAbilitySystemComponent;
+class UAttributeSet;
+class UGameplayEffect;
 
 UCLASS()
-class RTS_API AUnitBase : public ACharacter
+class RTS_API AUnitBase : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -56,6 +61,12 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnUnitDead OnUnitDead;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	URTSAbilitySystemComponent* AbilitySystemComponent = nullptr;
+
+	UPROPERTY()
+	UAttributeSet* AttributeSet = nullptr;;
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	UDecalComponent* DecalComponent = nullptr;
@@ -89,5 +100,16 @@ protected:
 	void DestroyDeadActor();
 
 	ARTSAIControllerBase* ThisUnitAIController = nullptr;
+
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	virtual void InitAttributes();
+
+	UPROPERTY(EditDefaultsOnly, Category = "GameplayAbility")
+	TSubclassOf<UGameplayEffect> DefaultAttributeEffect;
+
+	virtual void InitDefaultAbilities();
+
+	virtual void PossessedBy(AController* NewController) override;
 
 };

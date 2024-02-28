@@ -11,6 +11,8 @@
 #include "Perception/AISense_Damage.h"
 #include "RTS/AI/RTSAIControllerBase.h"
 #include "Components/CapsuleComponent.h"
+#include "RTS/GAS/RTSAbilitySystemComponent.h"
+#include "RTS/GAS/RTSAttributeSet.h"
 
 // Sets default values
 AUnitBase::AUnitBase()
@@ -21,6 +23,8 @@ AUnitBase::AUnitBase()
 	DecalComponent = CreateDefaultSubobject<UDecalComponent>(TEXT("DecalComponent"));
 	DecalComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
 
+	AbilitySystemComponent = CreateDefaultSubobject<URTSAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AttributeSet = CreateDefaultSubobject<URTSAttributeSet>(TEXT("AttributeSet"));
 }
 
 // Called when the game starts or when spawned
@@ -31,7 +35,7 @@ void AUnitBase::BeginPlay()
 	OnClicked.AddUniqueDynamic(this, &AUnitBase::OnUnitClicked);
 
 	RTSPlayerController = Cast<ARTSPlayerControllerBase>(GetWorld()->GetFirstPlayerController());
-	ThisUnitAIController = Cast<ARTSAIControllerBase>(GetController());	
+	ThisUnitAIController = Cast<ARTSAIControllerBase>(GetController());
 }
 
 // Called every frame
@@ -160,4 +164,39 @@ void AUnitBase::UnitDeath()
 void AUnitBase::DestroyDeadActor()
 {
 	Destroy();
+}
+
+UAbilitySystemComponent* AUnitBase::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void AUnitBase::InitAttributes()
+{
+	if (AbilitySystemComponent && DefaultAttributeEffect)
+	{
+		FGameplayEffectContextHandle EffectContextHandle = AbilitySystemComponent->MakeEffectContext();
+
+		EffectContextHandle.AddSourceObject(this);
+
+		FGameplayEffectSpecHandle SpecificationHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffect, 1, EffectContextHandle);
+
+		if (SpecificationHandle.IsValid())
+		{
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecificationHandle.Data.Get());
+		}
+	}
+}
+
+void AUnitBase::InitDefaultAbilities()
+{
+}
+
+void AUnitBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
+	InitAttributes();
 }
