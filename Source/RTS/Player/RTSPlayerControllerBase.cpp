@@ -10,6 +10,7 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "RTS/AI/RTSAIControllerBase.h"
+#include "RTS/GAS/RTSAttributeSet.h"
 
 ARTSPlayerControllerBase::ARTSPlayerControllerBase()
 {
@@ -128,7 +129,7 @@ void ARTSPlayerControllerBase::ClearSelection()
 
 void ARTSPlayerControllerBase::AddUnitToSelection(AUnitBase* UnitToAdd)
 {
-	if (UnitToAdd->UnitCurrentHealth > 0)
+	if (UnitToAdd->AttributeSet->GetHealth() > 0)
 	{
 		UnitSelection.AddUnique(UnitToAdd);
 		UnitToAdd->IsSelected(true);

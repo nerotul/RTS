@@ -8,7 +8,7 @@
 #include "RTS/Units/UnitBase.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
-
+#include "RTS/GAS/RTSAttributeSet.h"
 
 void APriestAIControllerBase::BeginPlay()
 {
@@ -20,7 +20,7 @@ void APriestAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimu
 	AUnitBase* SensedUnit = Cast<AUnitBase>(SensedActor);
 
 	if (Stimulus.WasSuccessfullySensed() == true && IsValid(SensedUnit) && SensedUnit->bIsAlive == true && SensedUnit->bIsPlayersUnit == ControlledUnit->bIsPlayersUnit && 
-		ControlledUnit->TargetActor == nullptr && SensedUnit->UnitCurrentHealth < SensedUnit->UnitMaxHealth)
+		ControlledUnit->TargetActor == nullptr && SensedUnit->AttributeSet->GetHealth() < SensedUnit->AttributeSet->GetMaxHealth())
 	{
 		ControlledUnit->SetAttackTargetActor(SensedUnit);
 
@@ -43,9 +43,9 @@ void APriestAIControllerBase::ChooseNewTarget()
 	{
 		AUnitBase* Unit = Cast<AUnitBase>(Actor);
 		if (IsValid(Unit) && Unit->bIsAlive == true && Unit->bIsPlayersUnit == ControlledUnit->bIsPlayersUnit && 
-			Unit->UnitCurrentHealth < MinHealth && Unit->UnitCurrentHealth < Unit->UnitMaxHealth)
+			Unit->AttributeSet->GetHealth() < MinHealth && Unit->AttributeSet->GetHealth() < Unit->AttributeSet->GetMaxHealth())
 		{
-			MinHealth = Unit->UnitCurrentHealth;
+			MinHealth = Unit->AttributeSet->GetHealth();
 			ClosestAlly = Unit;
 		}
 	}

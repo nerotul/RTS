@@ -57,8 +57,23 @@ void AUnitBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AUnitBase::Attack()
 {
-	TSubclassOf <UDamageType> DamageType;
-	UGameplayStatics::ApplyDamage(TargetActor, UnitAttackDamage, GetController(), this, DamageType);
+	//TSubclassOf <UDamageType> DamageType;
+	//UGameplayStatics::ApplyDamage(TargetActor, UnitAttackDamage, GetController(), this, DamageType);
+
+	if (AbilitySystemComponent && DamageEffect)
+	{
+		FGameplayEffectContextHandle EffectContextHandle = AbilitySystemComponent->MakeEffectContext();
+
+		EffectContextHandle.AddSourceObject(this);
+
+		FGameplayEffectSpecHandle SpecificationHandle = AbilitySystemComponent->MakeOutgoingSpec(DamageEffect, 1, EffectContextHandle);
+
+		if (SpecificationHandle.IsValid())
+		{
+			AUnitBase* TargetUnit = Cast<AUnitBase>(TargetActor);
+			AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*SpecificationHandle.Data.Get(), TargetUnit->AbilitySystemComponent);
+		}
+	}
 }
 
 void AUnitBase::IsSelected(bool bIsSelected)
@@ -122,11 +137,11 @@ float AUnitBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 	{
 		Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-		UnitCurrentHealth -= DamageAmount;
-		if (UnitCurrentHealth <= 0)
-		{
-			UnitDeath();
-		}
+		//AttributeSet->GetHealth() -= DamageAmount;
+		//if (AttributeSet->GetHealth() <= 0)
+		//{
+		//	UnitDeath();
+		//}
 
 		// Reporting damage event to the AI Perception to start retaliation attack
 		UAISense_Damage::ReportDamageEvent(GetWorld(), this, EventInstigator, DamageAmount, DamageCauser->GetActorLocation(), this->GetActorLocation());

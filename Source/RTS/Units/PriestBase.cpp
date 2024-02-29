@@ -41,10 +41,3 @@ void APriestBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)
 	}
 
 }
-
-void APriestBase::Attack()
-{
-	TSubclassOf <UDamageType> DamageType;
-	UGameplayStatics::ApplyDamage(TargetActor, -UnitAttackDamage, GetController(), this, DamageType);
-
-}

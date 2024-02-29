@@ -45,12 +45,6 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	AActor* TargetActor = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float UnitCurrentHealth = 20.0f;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float UnitMaxHealth = 20.0f;
-
 	void IsSelected(bool bIsSelected);
 
 	void SetAttackTargetActor(AActor* NewTargetActor);
@@ -65,7 +59,12 @@ public:
 	URTSAbilitySystemComponent* AbilitySystemComponent = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	const URTSAttributeSet* AttributeSet = nullptr;;
+	const URTSAttributeSet* AttributeSet = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GameplayAbility")
+	TSubclassOf<UGameplayEffect> DamageEffect;
+
+	void UnitDeath();
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -86,11 +85,6 @@ protected:
 	void SetFriendFoeDecal();
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
-
-	UPROPERTY(EditDefaultsOnly)
-	float UnitAttackDamage = 5.0f;
-
-	void UnitDeath();
 
 	UPROPERTY(EditDefaultsOnly)
 	UAnimSequence* DeathAnimation = nullptr;

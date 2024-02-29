@@ -19,9 +19,4 @@ protected:
 
 	virtual void OnUnitClicked(AActor* Target, FKey ButtonPressed) override;
 
-	// In this class attack is healing
-	virtual void Attack() override;
-
-
-
 };
