@@ -24,6 +24,7 @@ class RTS_API URTSAttributeSet : public UAttributeSet
 public:
 	URTSAttributeSet();
 
+	// All attribute values are initialized with data table in UE
 	UPROPERTY(BlueprintReadOnly, Category = "Health")
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(URTSAttributeSet, Health)
@@ -31,14 +32,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Health")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(URTSAttributeSet, MaxHealth)
-
-	UPROPERTY(BlueprintReadOnly, Category = "Mana")
-	FGameplayAttributeData Mana;
-	ATTRIBUTE_ACCESSORS(URTSAttributeSet, Mana)
-
-	UPROPERTY(BlueprintReadOnly, Category = "Mana")
-	FGameplayAttributeData MaxMana;
-	ATTRIBUTE_ACCESSORS(URTSAttributeSet, MaxMana)
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 

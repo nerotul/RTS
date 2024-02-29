@@ -57,9 +57,6 @@ void AUnitBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AUnitBase::Attack()
 {
-	//TSubclassOf <UDamageType> DamageType;
-	//UGameplayStatics::ApplyDamage(TargetActor, UnitAttackDamage, GetController(), this, DamageType);
-
 	if (AbilitySystemComponent && DamageEffect)
 	{
 		FGameplayEffectContextHandle EffectContextHandle = AbilitySystemComponent->MakeEffectContext();
@@ -131,26 +128,6 @@ void AUnitBase::SetFriendFoeDecal()
 	}
 }
 
-float AUnitBase::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
-{
-	if (bIsAlive == true)
-	{
-		Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
-		//AttributeSet->GetHealth() -= DamageAmount;
-		//if (AttributeSet->GetHealth() <= 0)
-		//{
-		//	UnitDeath();
-		//}
-
-		// Reporting damage event to the AI Perception to start retaliation attack
-		UAISense_Damage::ReportDamageEvent(GetWorld(), this, EventInstigator, DamageAmount, DamageCauser->GetActorLocation(), this->GetActorLocation());
-
-	}
-
-	return DamageAmount;
-}
-
 void AUnitBase::UnitDeath()
 {
 	if (IsValid(GetController()))
@@ -183,11 +160,4 @@ void AUnitBase::DestroyDeadActor()
 UAbilitySystemComponent* AUnitBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
-}
-
-void AUnitBase::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-
-	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }

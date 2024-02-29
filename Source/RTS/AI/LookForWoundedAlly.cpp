@@ -11,8 +11,6 @@ ULookForWoundedAlly::ULookForWoundedAlly(const FObjectInitializer& ObjectInitial
 	NodeName = "My Service";
 
 	bNotifyBecomeRelevant = true;
-	//bNotifyCeaseRelevant = true;
-
 
 	Interval = 0.5f;
 	RandomDeviation = 0.f;

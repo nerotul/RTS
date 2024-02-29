@@ -66,6 +66,8 @@ public:
 
 	void UnitDeath();
 
+	ARTSAIControllerBase* ThisUnitAIController = nullptr;
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	UDecalComponent* DecalComponent = nullptr;
@@ -84,8 +86,6 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SetFriendFoeDecal();
 
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
-
 	UPROPERTY(EditDefaultsOnly)
 	UAnimSequence* DeathAnimation = nullptr;
 
@@ -93,10 +93,6 @@ protected:
 
 	void DestroyDeadActor();
 
-	ARTSAIControllerBase* ThisUnitAIController = nullptr;
-
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
-	virtual void PossessedBy(AController* NewController) override;
 
 };
