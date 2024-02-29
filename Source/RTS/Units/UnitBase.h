@@ -14,7 +14,7 @@ class UBlackboardComponent;
 class ARTSAIControllerBase;
 class URTSAbilitySystemComponent;
 class UAbilitySystemComponent;
-class UAttributeSet;
+class URTSAttributeSet;
 class UGameplayEffect;
 
 UCLASS()
@@ -61,11 +61,11 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnUnitDead OnUnitDead;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	URTSAbilitySystemComponent* AbilitySystemComponent = nullptr;
 
-	UPROPERTY()
-	UAttributeSet* AttributeSet = nullptr;;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	const URTSAttributeSet* AttributeSet = nullptr;;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -102,13 +102,6 @@ protected:
 	ARTSAIControllerBase* ThisUnitAIController = nullptr;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
-	virtual void InitAttributes();
-
-	UPROPERTY(EditDefaultsOnly, Category = "GameplayAbility")
-	TSubclassOf<UGameplayEffect> DefaultAttributeEffect;
-
-	virtual void InitDefaultAbilities();
 
 	virtual void PossessedBy(AController* NewController) override;
 

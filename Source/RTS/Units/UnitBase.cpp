@@ -24,7 +24,6 @@ AUnitBase::AUnitBase()
 	DecalComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
 
 	AbilitySystemComponent = CreateDefaultSubobject<URTSAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
-	AttributeSet = CreateDefaultSubobject<URTSAttributeSet>(TEXT("AttributeSet"));
 }
 
 // Called when the game starts or when spawned
@@ -36,6 +35,9 @@ void AUnitBase::BeginPlay()
 
 	RTSPlayerController = Cast<ARTSPlayerControllerBase>(GetWorld()->GetFirstPlayerController());
 	ThisUnitAIController = Cast<ARTSAIControllerBase>(GetController());
+
+	AttributeSet = AbilitySystemComponent->GetSet<URTSAttributeSet>();
+
 }
 
 // Called every frame
@@ -49,6 +51,7 @@ void AUnitBase::Tick(float DeltaTime)
 void AUnitBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
 
 }
 
@@ -94,10 +97,6 @@ void AUnitBase::SetAttackTargetActor(AActor* NewTargetActor)
 		TargetActor = NewTargetActor;
 		ThisUnitAIController->UnitBlackboard->SetValueAsObject(FName("AttackTargetActor"), NewTargetActor);
 
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Blackboard not found!"));
 	}
 
 }
@@ -171,32 +170,9 @@ UAbilitySystemComponent* AUnitBase::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-void AUnitBase::InitAttributes()
-{
-	if (AbilitySystemComponent && DefaultAttributeEffect)
-	{
-		FGameplayEffectContextHandle EffectContextHandle = AbilitySystemComponent->MakeEffectContext();
-
-		EffectContextHandle.AddSourceObject(this);
-
-		FGameplayEffectSpecHandle SpecificationHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffect, 1, EffectContextHandle);
-
-		if (SpecificationHandle.IsValid())
-		{
-			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecificationHandle.Data.Get());
-		}
-	}
-}
-
-void AUnitBase::InitDefaultAbilities()
-{
-}
-
 void AUnitBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-
-	InitAttributes();
 }
