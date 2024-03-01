@@ -24,7 +24,7 @@ class RTS_API AUnitBase : public ACharacter, public IAbilitySystemInterface
 
 public:
 	// Sets default values for this character's properties
-	AUnitBase();
+	AUnitBase(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	// Called when the game starts or when spawned

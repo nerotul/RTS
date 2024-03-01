@@ -13,9 +13,10 @@
 #include "Components/CapsuleComponent.h"
 #include "RTS/GAS/RTSAbilitySystemComponent.h"
 #include "RTS/GAS/RTSAttributeSet.h"
+#include "SkeletalMeshComponentBudgeted.h"
 
 // Sets default values
-AUnitBase::AUnitBase()
+AUnitBase::AUnitBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<USkeletalMeshComponentBudgeted>(ACharacter::MeshComponentName))
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
