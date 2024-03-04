@@ -16,6 +16,7 @@ class URTSAbilitySystemComponent;
 class UAbilitySystemComponent;
 class URTSAttributeSet;
 class UGameplayEffect;
+class UWidgetComponent;
 
 UCLASS()
 class RTS_API AUnitBase : public ACharacter, public IAbilitySystemInterface
@@ -67,6 +68,9 @@ public:
 	void UnitDeath();
 
 	ARTSAIControllerBase* ThisUnitAIController = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UWidgetComponent* HealthWidget = nullptr;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)

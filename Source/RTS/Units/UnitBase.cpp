@@ -14,6 +14,7 @@
 #include "RTS/GAS/RTSAbilitySystemComponent.h"
 #include "RTS/GAS/RTSAttributeSet.h"
 #include "SkeletalMeshComponentBudgeted.h"
+#include "Components/WidgetComponent.h"
 
 // Sets default values
 AUnitBase::AUnitBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<USkeletalMeshComponentBudgeted>(ACharacter::MeshComponentName))
@@ -25,6 +26,9 @@ AUnitBase::AUnitBase(const FObjectInitializer& ObjectInitializer) : Super(Object
 	DecalComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
 
 	AbilitySystemComponent = CreateDefaultSubobject<URTSAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+
+	HealthWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthWidget"));
+	HealthWidget->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 // Called when the game starts or when spawned
@@ -38,6 +42,11 @@ void AUnitBase::BeginPlay()
 	ThisUnitAIController = Cast<ARTSAIControllerBase>(GetController());
 
 	AttributeSet = AbilitySystemComponent->GetSet<URTSAttributeSet>();
+
+	if (bIsPlayersUnit == false)
+	{
+		HealthWidget->SetVisibility(false);
+	}
 
 }
 
@@ -136,6 +145,7 @@ void AUnitBase::UnitDeath()
 		OnUnitDead.Broadcast(bIsPlayersUnit);
 		GetController()->Destroy();
 		bIsAlive = false;
+		HealthWidget->SetVisibility(false);
 		GetWorldTimerManager().SetTimer(DestroyDeadActorTimer, this, &AUnitBase::DestroyDeadActor, 1.0f, false, 5.0f);
 
 		// If unit is friendly and was selected

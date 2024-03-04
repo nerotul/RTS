@@ -19,7 +19,8 @@ void URTSAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, f
 		if (NewValue == 0)
 		{
 			AUnitBase* OwnerUnit = Cast<AUnitBase>(GetOwningActor());
-			if(IsValid(OwnerUnit))
+
+			if(IsValid(OwnerUnit) && OwnerUnit->bIsAlive == true)
 			{
 				OwnerUnit->UnitDeath();
 			}

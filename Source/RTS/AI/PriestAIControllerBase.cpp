@@ -9,6 +9,7 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "RTS/GAS/RTSAttributeSet.h"
+#include "Components/WidgetComponent.h"
 
 void APriestAIControllerBase::BeginPlay()
 {
@@ -29,6 +30,17 @@ void APriestAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimu
 	{
 		ChooseNewTarget();
 	}
+
+	if (Stimulus.WasSuccessfullySensed() == true && IsValid(SensedUnit) && SensedUnit->bIsAlive == true && SensedUnit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit)
+	{
+		if (ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
+		{
+			ControlledUnit->HealthWidget->SetVisibility(true);
+			UnitBlackboard->SetValueAsVector(FName("TargetLocation"), ControlledUnit->GetActorLocation());
+		}
+
+	}
+
 
 }
 

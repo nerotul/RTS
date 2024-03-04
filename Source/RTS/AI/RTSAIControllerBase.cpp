@@ -8,6 +8,7 @@
 #include "RTS/Units/UnitBase.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Components/WidgetComponent.h"
 
 ARTSAIControllerBase::ARTSAIControllerBase()
 {
@@ -46,6 +47,11 @@ void ARTSAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimulus
 	if (Stimulus.WasSuccessfullySensed() == true && IsValid(SensedUnit) && SensedUnit->bIsAlive == true && SensedUnit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit && ControlledUnit->TargetActor == nullptr)
 	{
 		ControlledUnit->SetAttackTargetActor(SensedUnit);
+
+		if (ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
+		{
+			ControlledUnit->HealthWidget->SetVisibility(true);
+		}
 
 	}
 	else if (Stimulus.WasSuccessfullySensed() == false && IsValid(SensedUnit) && SensedUnit->bIsAlive == true && SensedUnit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit)
@@ -87,6 +93,12 @@ void ARTSAIControllerBase::ChooseNewTarget()
 	if (ClosestEnemy == nullptr)
 	{
 		UnitBlackboard->SetValueAsVector(FName("TargetLocation"), ControlledUnit->GetActorLocation());
+		
+		if (ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
+		{
+			ControlledUnit->HealthWidget->SetVisibility(false);
+		}
+
 	}
 
 	PerceivedActors.Empty();
