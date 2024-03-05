@@ -45,7 +45,7 @@ void AUnitBase::BeginPlay()
 
 	if (bIsPlayersUnit == false)
 	{
-		HealthWidget->SetVisibility(false);
+		SetUnitVisibility(false);
 	}
 
 }
@@ -86,6 +86,14 @@ void AUnitBase::Attack()
 void AUnitBase::IsSelected(bool bIsSelected)
 {
 	DecalComponent->SetVisibility(bIsSelected);
+}
+
+void AUnitBase::SetUnitVisibility(bool bIsVisible)
+{
+	HealthWidget->SetVisibility(bIsVisible);
+	GetMesh()->SetVisibility(bIsVisible);
+	DecalComponent->SetVisibility(bIsVisible);
+
 }
 
 void AUnitBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)

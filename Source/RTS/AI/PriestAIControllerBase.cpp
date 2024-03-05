@@ -9,7 +9,6 @@
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "RTS/GAS/RTSAttributeSet.h"
-#include "Components/WidgetComponent.h"
 
 void APriestAIControllerBase::BeginPlay()
 {
@@ -35,13 +34,11 @@ void APriestAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimu
 	{
 		if (ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
 		{
-			ControlledUnit->HealthWidget->SetVisibility(true);
+			ControlledUnit->SetUnitVisibility(true);
 			UnitBlackboard->SetValueAsVector(FName("TargetLocation"), ControlledUnit->GetActorLocation());
 		}
 
 	}
-
-
 }
 
 void APriestAIControllerBase::ChooseNewTarget()
@@ -71,4 +68,25 @@ void APriestAIControllerBase::ChooseNewTarget()
 
 	PerceivedActors.Empty();
 
+}
+
+void APriestAIControllerBase::CheckIfEnemiesPerceived()
+{
+	AIPerceptionComponent->GetCurrentlyPerceivedActors(SightSenseConfig->GetSenseImplementation(), PerceivedActors);
+
+	int EnemyCount = 0;
+
+	for (AActor* Actor : PerceivedActors)
+	{
+		AUnitBase* Unit = Cast<AUnitBase>(Actor);
+		if (IsValid(Unit) && Unit->bIsAlive == true && Unit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit)
+		{
+			EnemyCount++;
+		}
+	}
+
+	if (EnemyCount == 0)
+	{
+		ControlledUnit->SetUnitVisibility(false);
+	}
 }

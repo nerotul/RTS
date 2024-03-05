@@ -20,6 +20,9 @@ protected:
 	// Looks for an ally with wounds
 	virtual void EnemySensed(AActor* SensedActor, FAIStimulus Stimulus) override;
 
+public:
 	virtual void ChooseNewTarget() override;
+
+	void CheckIfEnemiesPerceived();
 	
 };

@@ -72,6 +72,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UWidgetComponent* HealthWidget = nullptr;
 
+	void SetUnitVisibility(bool bIsVisible);
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	UDecalComponent* DecalComponent = nullptr;

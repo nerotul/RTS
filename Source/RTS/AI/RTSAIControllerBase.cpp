@@ -8,7 +8,6 @@
 #include "RTS/Units/UnitBase.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Components/WidgetComponent.h"
 
 ARTSAIControllerBase::ARTSAIControllerBase()
 {
@@ -50,7 +49,7 @@ void ARTSAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimulus
 
 		if (ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
 		{
-			ControlledUnit->HealthWidget->SetVisibility(true);
+			ControlledUnit->SetUnitVisibility(true);
 		}
 
 	}
@@ -96,7 +95,8 @@ void ARTSAIControllerBase::ChooseNewTarget()
 		
 		if (ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
 		{
-			ControlledUnit->HealthWidget->SetVisibility(false);
+			ControlledUnit->SetUnitVisibility(false);
+
 		}
 
 	}
