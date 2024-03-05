@@ -74,6 +74,8 @@ void ARTSAIControllerBase::ChooseNewTarget()
 {
 	AIPerceptionComponent->GetCurrentlyPerceivedActors(SightSenseConfig->GetSenseImplementation(), PerceivedActors);
 
+	UnitBlackboard->SetValueAsVector(FName("TargetLocation"), ControlledUnit->GetActorLocation());
+
 	float MinDistance = 99999.0f;
 	AUnitBase* ClosestEnemy = nullptr;
 
@@ -91,8 +93,7 @@ void ARTSAIControllerBase::ChooseNewTarget()
 
 	if (ClosestEnemy == nullptr)
 	{
-		UnitBlackboard->SetValueAsVector(FName("TargetLocation"), ControlledUnit->GetActorLocation());
-		
+	
 		if (ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
 		{
 			ControlledUnit->SetUnitVisibility(false);
