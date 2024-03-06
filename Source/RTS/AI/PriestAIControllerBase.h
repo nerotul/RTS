@@ -6,6 +6,8 @@
 #include "RTSAIControllerBase.h"
 #include "PriestAIControllerBase.generated.h"
 
+class AUnitBase;
+
 /**
  * 
  */
@@ -19,6 +21,10 @@ protected:
 
 	// Looks for an ally with wounds
 	virtual void EnemySensed(AActor* SensedActor, FAIStimulus Stimulus) override;
+
+	AUnitBase* FindMostWoundedAllyInSight(const TArray<AActor*> InPerceivedActors);
+
+	bool CheckIfAllyAndWounded(const AUnitBase* InAllyUnit);
 
 public:
 	virtual void ChooseNewTarget() override;

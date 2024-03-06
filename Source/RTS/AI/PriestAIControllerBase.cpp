@@ -19,8 +19,7 @@ void APriestAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimu
 {
 	AUnitBase* SensedUnit = Cast<AUnitBase>(SensedActor);
 
-	if (Stimulus.WasSuccessfullySensed() == true && IsValid(SensedUnit) && SensedUnit->bIsAlive == true && SensedUnit->bIsPlayersUnit == ControlledUnit->bIsPlayersUnit && 
-		ControlledUnit->TargetActor == nullptr && SensedUnit->AttributeSet->GetHealth() < SensedUnit->AttributeSet->GetMaxHealth())
+	if (Stimulus.WasSuccessfullySensed() == true && CheckIfAllyAndWounded(SensedUnit) && ControlledUnit->TargetActor == nullptr)
 	{
 		ControlledUnit->SetAttackTargetActor(SensedUnit);
 
@@ -30,7 +29,7 @@ void APriestAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimu
 		ChooseNewTarget();
 	}
 
-	if (Stimulus.WasSuccessfullySensed() == true && IsValid(SensedUnit) && SensedUnit->bIsAlive == true && SensedUnit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit)
+	if (Stimulus.WasSuccessfullySensed() == true && CheckIfEnemyUnitAndAlive(SensedUnit))
 	{
 		if (ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
 		{
@@ -41,32 +40,44 @@ void APriestAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimu
 	}
 }
 
-void APriestAIControllerBase::ChooseNewTarget()
+AUnitBase* APriestAIControllerBase::FindMostWoundedAllyInSight(const TArray<AActor*> InPerceivedActors)
 {
-	AIPerceptionComponent->GetCurrentlyPerceivedActors(SightSenseConfig->GetSenseImplementation(), PerceivedActors);
-
 	float MinHealth = 99999.0f;
 	AUnitBase* ClosestAlly = nullptr;
 
 	for (AActor* Actor : PerceivedActors)
 	{
 		AUnitBase* Unit = Cast<AUnitBase>(Actor);
-		if (IsValid(Unit) && Unit->bIsAlive == true && Unit->bIsPlayersUnit == ControlledUnit->bIsPlayersUnit && 
-			Unit->AttributeSet->GetHealth() < MinHealth && Unit->AttributeSet->GetHealth() < Unit->AttributeSet->GetMaxHealth())
+		if (CheckIfAllyAndWounded(Unit) && Unit->AttributeSet->GetHealth() < MinHealth)
 		{
 			MinHealth = Unit->AttributeSet->GetHealth();
 			ClosestAlly = Unit;
 		}
 	}
 
-	ControlledUnit->SetAttackTargetActor(ClosestAlly);
+	PerceivedActors.Empty();
 
-	if (ClosestAlly == nullptr)
+	return ClosestAlly;
+}
+
+bool APriestAIControllerBase::CheckIfAllyAndWounded(const AUnitBase* InAllyUnit)
+{
+	if (IsValid(InAllyUnit) && InAllyUnit->bIsAlive == true && InAllyUnit->bIsPlayersUnit == ControlledUnit->bIsPlayersUnit && 
+		InAllyUnit->AttributeSet->GetHealth() < InAllyUnit->AttributeSet->GetMaxHealth())
 	{
-		UnitBlackboard->SetValueAsVector(FName("TargetLocation"), ControlledUnit->GetActorLocation());
+		return true;
 	}
 
-	PerceivedActors.Empty();
+	return false;
+}
+
+void APriestAIControllerBase::ChooseNewTarget()
+{
+	UnitBlackboard->SetValueAsVector(FName("TargetLocation"), ControlledUnit->GetActorLocation());
+
+	AIPerceptionComponent->GetCurrentlyPerceivedActors(SightSenseConfig->GetSenseImplementation(), PerceivedActors);
+	AUnitBase* ClosestAlly = FindMostWoundedAllyInSight(PerceivedActors);
+	ControlledUnit->SetAttackTargetActor(ClosestAlly);
 
 }
 
@@ -74,18 +85,7 @@ void APriestAIControllerBase::CheckIfEnemiesPerceived()
 {
 	AIPerceptionComponent->GetCurrentlyPerceivedActors(SightSenseConfig->GetSenseImplementation(), PerceivedActors);
 
-	int EnemyCount = 0;
-
-	for (AActor* Actor : PerceivedActors)
-	{
-		AUnitBase* Unit = Cast<AUnitBase>(Actor);
-		if (IsValid(Unit) && Unit->bIsAlive == true && Unit->bIsPlayersUnit != ControlledUnit->bIsPlayersUnit)
-		{
-			EnemyCount++;
-		}
-	}
-
-	if (EnemyCount == 0)
+	if (FindClosestEnemyInSight(PerceivedActors) == nullptr)
 	{
 		ControlledUnit->SetUnitVisibility(false);
 	}

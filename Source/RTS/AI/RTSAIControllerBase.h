@@ -51,6 +51,10 @@ protected:
 
 	void FinishRepositionUnit();
 
+	AUnitBase* FindClosestEnemyInSight(const TArray<AActor*> InPerceivedActors);
+
+	bool CheckIfEnemyUnitAndAlive(const AUnitBase* InEnemyUnit);
+
 public:
 	virtual void ChooseNewTarget();
 

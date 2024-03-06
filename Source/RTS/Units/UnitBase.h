@@ -48,6 +48,7 @@ public:
 
 	void IsSelected(bool bIsSelected);
 
+	// For a priest attack means healing
 	void SetAttackTargetActor(AActor* NewTargetActor);
 
 	UPROPERTY(BlueprintReadOnly)
