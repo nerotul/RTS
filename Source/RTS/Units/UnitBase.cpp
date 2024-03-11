@@ -166,6 +166,7 @@ void AUnitBase::UnitDeath()
 		GetController()->Destroy();
 		bIsAlive = false;
 		HealthWidget->SetVisibility(false);
+		DecalComponent->SetVisibility(false);
 		GetWorldTimerManager().SetTimer(DestroyDeadActorTimer, this, &AUnitBase::DestroyDeadActor, 1.0f, false, 5.0f);
 
 		// If unit is friendly and was selected
