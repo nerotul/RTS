@@ -75,6 +75,12 @@ public:
 
 	void SetUnitVisibility(bool bIsVisible);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHealthChanged();
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsUnitInEnemySight = false;
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	UDecalComponent* DecalComponent = nullptr;

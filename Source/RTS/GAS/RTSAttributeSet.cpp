@@ -18,20 +18,25 @@ void URTSAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, f
 		AUnitBase* OwnerUnit = Cast<AUnitBase>(GetOwningActor());
 		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxHealth());
 
-		// Move these checks to que
+		if (NewValue <= 0)
+		{
+			if (IsValid(OwnerUnit) && OwnerUnit->bIsAlive == true)
+			{
+				OwnerUnit->UnitDeath();
+			}
+		}
+
 		if (NewValue < GetHealth())
 		{
 			UAISense_Damage::ReportDamageEvent(GetWorld(), OwnerUnit, nullptr, NewValue - GetHealth(), OwnerUnit->GetActorLocation(), OwnerUnit->GetActorLocation());
 		}
 
-		if (NewValue == 0)
-		{
-
-			if(IsValid(OwnerUnit) && OwnerUnit->bIsAlive == true)
-			{
-				OwnerUnit->UnitDeath();
-			}
-		}
 	}
 
+}
+
+void URTSAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+{
+	AUnitBase* OwnerUnit = Cast<AUnitBase>(GetOwningActor());
+	OwnerUnit->OnHealthChanged();
 }

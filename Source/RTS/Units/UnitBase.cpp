@@ -29,6 +29,7 @@ AUnitBase::AUnitBase(const FObjectInitializer& ObjectInitializer) : Super(Object
 
 	HealthWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthWidget"));
 	HealthWidget->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+	HealthWidget->SetVisibility(false);
 }
 
 // Called when the game starts or when spawned
@@ -47,6 +48,12 @@ void AUnitBase::BeginPlay()
 	{
 		SetUnitVisibility(false);
 	}
+	else
+	{
+		bIsUnitInEnemySight = true;
+	}
+
+
 
 }
 
@@ -90,9 +97,14 @@ void AUnitBase::IsSelected(bool bIsSelected)
 
 void AUnitBase::SetUnitVisibility(bool bIsVisible)
 {
-	HealthWidget->SetVisibility(bIsVisible);
 	GetMesh()->SetVisibility(bIsVisible);
 	DecalComponent->SetVisibility(bIsVisible);
+	bIsUnitInEnemySight = bIsVisible;
+
+	if (bIsVisible == false)
+	{
+		HealthWidget->SetVisibility(false);
+	}
 
 }
 
