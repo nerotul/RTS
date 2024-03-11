@@ -51,6 +51,7 @@ void ARTSAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimulus
 		if (ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
 		{
 			ControlledUnit->SetUnitVisibility(true);
+			ControlledUnit->OnInEnemySight();
 		}
 
 	}

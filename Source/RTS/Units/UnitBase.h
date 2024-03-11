@@ -78,6 +78,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHealthChanged();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnInEnemySight();
+
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsUnitInEnemySight = false;
 
