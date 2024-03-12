@@ -160,20 +160,21 @@ void AUnitBase::SetFriendFoeDecal()
 
 void AUnitBase::UnitDeath()
 {
+	// If unit is friendly and was selected
+	if (bIsPlayersUnit == true && DecalComponent->IsVisible())
+	{
+		RTSPlayerController->RemoveUnitFromSelection(this);
+	}
+
 	if (IsValid(GetController()))
 	{
+		bIsAlive = false;
 		OnUnitDead.Broadcast(bIsPlayersUnit);
 		GetController()->Destroy();
-		bIsAlive = false;
 		HealthWidget->SetVisibility(false);
 		DecalComponent->SetVisibility(false);
 		GetWorldTimerManager().SetTimer(DestroyDeadActorTimer, this, &AUnitBase::DestroyDeadActor, 1.0f, false, 5.0f);
 
-		// If unit is friendly and was selected
-		if (bIsPlayersUnit == true && DecalComponent->IsVisible())
-		{
-			RTSPlayerController->RemoveUnitFromSelection(this);
-		}
 
 		GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
