@@ -51,4 +51,12 @@ protected:
 
 	void MoveUnit();
 
+	TArray<AUnitBase*> BindedUnitGroup;
+
+	TArray<TArray<AUnitBase*>> BindedGroups;
+
+	void BindGroup();
+
+	void SelectBindedGroup();
+
 };

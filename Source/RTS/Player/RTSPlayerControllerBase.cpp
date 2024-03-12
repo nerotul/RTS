@@ -48,7 +48,8 @@ void ARTSPlayerControllerBase::SetupInputComponent()
 	InputComponent->BindAction("SelectWithCanvas", IE_Pressed, this, &ARTSPlayerControllerBase::StartSelection);
 	InputComponent->BindAction("SelectWithCanvas", IE_Released, this, &ARTSPlayerControllerBase::StopSelection);
 	InputComponent->BindAction("ExecuteAction", IE_Pressed, this, &ARTSPlayerControllerBase::MoveUnit);
-
+	InputComponent->BindAction("BindUnitGroup", IE_Pressed, this, &ARTSPlayerControllerBase::BindGroup);
+	InputComponent->BindAction("SelectBindedGroup", IE_Pressed, this, &ARTSPlayerControllerBase::SelectBindedGroup);
 }
 
 void ARTSPlayerControllerBase::ZoomCameraIn()
@@ -115,6 +116,65 @@ void ARTSPlayerControllerBase::MoveUnit()
 		}
 
 	}
+}
+
+void ARTSPlayerControllerBase::BindGroup()
+{
+	BindedUnitGroup.Empty();
+	int32 IndexToBind = -1;
+	
+	for (AUnitBase* Unit : UnitSelection)
+	{
+		BindedUnitGroup.Add(Unit);
+	}
+
+	if (WasInputKeyJustPressed(FName("One")))
+	{
+		IndexToBind = 0;
+	}
+	else if (WasInputKeyJustPressed(FName("Two")))
+	{
+		IndexToBind = 1;
+	}
+	else if (WasInputKeyJustPressed(FName("Three")))
+	{
+		IndexToBind = 2;
+	}
+
+	BindedGroups.EmplaceAt(IndexToBind, BindedUnitGroup);
+
+}
+
+void ARTSPlayerControllerBase::SelectBindedGroup()
+{
+	int32 IndexToSelect = -1;
+	
+	if (WasInputKeyJustPressed(FName("One")) && BindedGroups.IsValidIndex(0))
+	{
+		IndexToSelect = 0;
+	}
+	else if (WasInputKeyJustPressed(FName("Two")) && BindedGroups.IsValidIndex(1))
+	{
+		IndexToSelect = 1;
+	}
+	else if (WasInputKeyJustPressed(FName("Three")) && BindedGroups.IsValidIndex(2))
+	{
+		IndexToSelect = 2;
+	}
+
+	if (BindedGroups.IsValidIndex(IndexToSelect))
+	{
+		ClearSelection();
+
+		for (AUnitBase* Unit : BindedGroups[IndexToSelect])
+		{
+			if (IsValid(Unit))
+			{
+				AddUnitToSelection(Unit);
+			}
+		}
+	}
+
 }
 
 void ARTSPlayerControllerBase::ClearSelection()
