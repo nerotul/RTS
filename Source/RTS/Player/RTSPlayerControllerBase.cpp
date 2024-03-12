@@ -50,6 +50,9 @@ void ARTSPlayerControllerBase::SetupInputComponent()
 	InputComponent->BindAction("ExecuteAction", IE_Pressed, this, &ARTSPlayerControllerBase::MoveUnit);
 	InputComponent->BindAction("BindUnitGroup", IE_Pressed, this, &ARTSPlayerControllerBase::BindGroup);
 	InputComponent->BindAction("SelectBindedGroup", IE_Pressed, this, &ARTSPlayerControllerBase::SelectBindedGroup);
+	InputComponent->BindAction("AddMovementWaypoint", IE_Pressed, this, &ARTSPlayerControllerBase::AddMovementWaypoint);
+	InputComponent->BindAction("StopMovement", IE_Pressed, this, &ARTSPlayerControllerBase::StopMovement);
+
 }
 
 void ARTSPlayerControllerBase::ZoomCameraIn()
@@ -110,6 +113,7 @@ void ARTSPlayerControllerBase::MoveUnit()
 			ARTSAIControllerBase* UnitController = Cast<ARTSAIControllerBase>(Unit->GetController());
 			if (IsValid(UnitController))
 			{
+				UnitController->MovementWaypoints.Empty();
 				UnitController->RepositionUnit();
 			}
 
@@ -172,6 +176,51 @@ void ARTSPlayerControllerBase::SelectBindedGroup()
 			{
 				AddUnitToSelection(Unit);
 			}
+		}
+	}
+
+}
+
+void ARTSPlayerControllerBase::AddMovementWaypoint()
+{
+	FHitResult CursorInteractableHitResult;
+
+	if (!GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, CursorInteractableHitResult))
+	{
+		FHitResult CursorHitResult;
+		GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, CursorHitResult);
+
+		for (AUnitBase* Unit : UnitSelection)
+		{
+			ARTSAIControllerBase* UnitController = Cast<ARTSAIControllerBase>(Unit->GetController());
+
+			if (IsValid(UnitController))
+			{
+				if (UnitController->MovementWaypoints.Num() == 0)
+				{
+					UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(Unit);
+					UnitBlackboard->SetValueAsVector(FName("TargetLocation"), CursorHitResult.Location);
+					UnitController->RepositionUnit();
+				}
+
+				UnitController->MovementWaypoints.Add(CursorHitResult.Location);
+
+			}
+
+		}
+
+	}
+
+}
+
+void ARTSPlayerControllerBase::StopMovement()
+{
+	for (AUnitBase* Unit : UnitSelection)
+	{
+		ARTSAIControllerBase* UnitController = Cast<ARTSAIControllerBase>(Unit->GetController());
+		if (IsValid(UnitController))
+		{
+			UnitController->StopUnitMovement();
 		}
 	}
 

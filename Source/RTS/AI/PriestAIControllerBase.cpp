@@ -34,7 +34,7 @@ void APriestAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimu
 		if (ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
 		{
 			ControlledUnit->SetUnitVisibility(true);
-			UnitBlackboard->SetValueAsVector(FName("TargetLocation"), ControlledUnit->GetActorLocation());
+			StopUnitMovement();
 		}
 
 	}
@@ -73,8 +73,6 @@ bool APriestAIControllerBase::CheckIfAllyAndWounded(const AUnitBase* InAllyUnit)
 
 void APriestAIControllerBase::ChooseNewTarget()
 {
-	UnitBlackboard->SetValueAsVector(FName("TargetLocation"), ControlledUnit->GetActorLocation());
-
 	AIPerceptionComponent->GetCurrentlyPerceivedActors(SightSenseConfig->GetSenseImplementation(), PerceivedActors);
 	AUnitBase* ClosestAlly = FindMostWoundedAllyInSight(PerceivedActors);
 	ControlledUnit->SetAttackTargetActor(ClosestAlly);

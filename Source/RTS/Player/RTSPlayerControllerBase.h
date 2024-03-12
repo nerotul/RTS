@@ -59,4 +59,8 @@ protected:
 
 	void SelectBindedGroup();
 
+	void AddMovementWaypoint();
+
+	void StopMovement();
+
 };

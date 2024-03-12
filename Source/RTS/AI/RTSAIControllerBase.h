@@ -60,5 +60,9 @@ public:
 
 	// Making unit to ignore enemies for some time while moving
 	void RepositionUnit();
+
+	TArray<FVector> MovementWaypoints;
+
+	void StopUnitMovement();
 	
 };

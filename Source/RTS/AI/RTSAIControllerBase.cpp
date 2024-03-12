@@ -103,9 +103,15 @@ void ARTSAIControllerBase::RepositionUnit()
 	GetWorldTimerManager().SetTimer(SightCooloffTimer, this, &ARTSAIControllerBase::FinishRepositionUnit, 1.0f, false, 0.5f);
 }
 
-void ARTSAIControllerBase::ChooseNewTarget()
+void ARTSAIControllerBase::StopUnitMovement()
 {
 	UnitBlackboard->SetValueAsVector(FName("TargetLocation"), ControlledUnit->GetActorLocation());
+	MovementWaypoints.Empty();
+}
+
+void ARTSAIControllerBase::ChooseNewTarget()
+{
+	StopUnitMovement();
 
 	AIPerceptionComponent->GetCurrentlyPerceivedActors(SightSenseConfig->GetSenseImplementation(), PerceivedActors);
 	AUnitBase* ClosestEnemy = FindClosestEnemyInSight(PerceivedActors);
