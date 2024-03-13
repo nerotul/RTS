@@ -28,6 +28,7 @@ bool UHasNextWaypoint::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerC
 	else
 	{
 		OwnerAIController->StopUnitMovement();
+		OwnerAIController->MovementWaypoints.Empty();
 		return false;
 	}
 }

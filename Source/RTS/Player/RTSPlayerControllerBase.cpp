@@ -37,6 +37,11 @@ void ARTSPlayerControllerBase::BeginPlay()
 	AHUD* HUDInstance = GetHUD();
 	CanvasHUDInstance = Cast<ARTSCanvasBase>(HUDInstance);
 
+	for (int i = 0; i < 3; i++)
+	{
+		BindedGroups.Add(BindedUnitGroup);
+	}
+
 }
 
 void ARTSPlayerControllerBase::SetupInputComponent()
@@ -114,6 +119,7 @@ void ARTSPlayerControllerBase::MoveUnit()
 			if (IsValid(UnitController))
 			{
 				UnitController->MovementWaypoints.Empty();
+				UnitController->MovementWaypoints.Add(CursorHitResult.Location);
 				UnitController->RepositionUnit();
 			}
 
@@ -145,7 +151,7 @@ void ARTSPlayerControllerBase::BindGroup()
 		IndexToBind = 2;
 	}
 
-	BindedGroups.EmplaceAt(IndexToBind, BindedUnitGroup);
+	BindedGroups[IndexToBind] = BindedUnitGroup;
 
 }
 

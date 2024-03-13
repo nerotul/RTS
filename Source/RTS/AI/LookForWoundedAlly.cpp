@@ -2,8 +2,7 @@
 
 
 #include "LookForWoundedAlly.h"
-#include "RTS/AI/RTSAIControllerBase.h"
-
+#include "PriestAIControllerBase.h"
 
 ULookForWoundedAlly::ULookForWoundedAlly(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -21,7 +20,7 @@ void ULookForWoundedAlly::OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, ui
 	Super::OnBecomeRelevant(OwnerComp, NodeMemory);
 
 	AAIController* AIController = OwnerComp.GetAIOwner();
-	ARTSAIControllerBase* OwnerAIController = Cast<ARTSAIControllerBase>(AIController);
-	OwnerAIController->ChooseNewTarget();
+	APriestAIControllerBase* PriestAIController = Cast<APriestAIControllerBase>(AIController);
+	PriestAIController->ChooseNewTarget();
 
 }

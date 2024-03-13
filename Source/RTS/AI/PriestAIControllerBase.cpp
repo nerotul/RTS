@@ -73,6 +73,7 @@ bool APriestAIControllerBase::CheckIfAllyAndWounded(const AUnitBase* InAllyUnit)
 
 void APriestAIControllerBase::ChooseNewTarget()
 {
+	StopUnitMovement();
 	AIPerceptionComponent->GetCurrentlyPerceivedActors(SightSenseConfig->GetSenseImplementation(), PerceivedActors);
 	AUnitBase* ClosestAlly = FindMostWoundedAllyInSight(PerceivedActors);
 	ControlledUnit->SetAttackTargetActor(ClosestAlly);
