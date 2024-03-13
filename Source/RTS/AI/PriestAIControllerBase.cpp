@@ -15,6 +15,12 @@ void APriestAIControllerBase::BeginPlay()
 	Super::BeginPlay();
 }
 
+void APriestAIControllerBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	ChooseNewTarget();
+}
+
 void APriestAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimulus)
 {
 	AUnitBase* SensedUnit = Cast<AUnitBase>(SensedActor);
@@ -73,10 +79,13 @@ bool APriestAIControllerBase::CheckIfAllyAndWounded(const AUnitBase* InAllyUnit)
 
 void APriestAIControllerBase::ChooseNewTarget()
 {
-	StopUnitMovement();
-	AIPerceptionComponent->GetCurrentlyPerceivedActors(SightSenseConfig->GetSenseImplementation(), PerceivedActors);
-	AUnitBase* ClosestAlly = FindMostWoundedAllyInSight(PerceivedActors);
-	ControlledUnit->SetAttackTargetActor(ClosestAlly);
+	if (UnitBlackboard != nullptr && ControlledUnit->TargetActor == nullptr)
+	{
+		AIPerceptionComponent->GetCurrentlyPerceivedActors(SightSenseConfig->GetSenseImplementation(), PerceivedActors);
+		AUnitBase* ClosestAlly = FindMostWoundedAllyInSight(PerceivedActors);
+		ControlledUnit->SetAttackTargetActor(ClosestAlly);
+
+	}
 
 }
 

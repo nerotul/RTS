@@ -28,6 +28,7 @@ bool UIsTargetHealthy::CalculateRawConditionValue(UBehaviorTreeComponent& OwnerC
 	// Change target if current target unit has full health
 	if (TargetUnit->bIsAlive == true && TargetUnit->AttributeSet->GetHealth() >= TargetUnit->AttributeSet->GetMaxHealth() || OwnerUnit->bIsPlayersUnit != TargetUnit->bIsPlayersUnit)
 	{
+		OwnerUnit->SetAttackTargetActor(nullptr);
 		OwnerAIController->ChooseNewTarget();
 		return true;
 	}
