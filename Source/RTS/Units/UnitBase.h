@@ -111,4 +111,6 @@ protected:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* AttackSound = nullptr;
 };
