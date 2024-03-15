@@ -15,6 +15,7 @@
 #include "RTS/GAS/RTSAttributeSet.h"
 #include "SkeletalMeshComponentBudgeted.h"
 #include "Components/WidgetComponent.h"
+#include "PriestBase.h"
 
 // Sets default values
 AUnitBase::AUnitBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<USkeletalMeshComponentBudgeted>(ACharacter::MeshComponentName))
@@ -127,6 +128,19 @@ void AUnitBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)
 		for (AUnitBase* Unit : RTSPlayerController->UnitSelection)
 		{
 			Unit->SetAttackTargetActor(this);
+		}
+
+	}
+	else if (ButtonPressed.GetFName() == FName("RightMouseButton") && bIsPlayersUnit == true && bIsAlive == true)
+	{
+		for (AUnitBase* Unit : RTSPlayerController->UnitSelection)
+		{
+			APriestBase* Priest = Cast<APriestBase>(Unit);
+
+			if (IsValid(Priest))
+			{
+				Priest->SetAttackTargetActor(this);
+			}
 		}
 
 	}

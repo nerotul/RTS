@@ -20,7 +20,7 @@ ARTSCameraBase::ARTSCameraBase()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->AttachToComponent(SpringArm, FAttachmentTransformRules::KeepRelativeTransform);
 
-	SpringArm->TargetArmLength = 3000.0f;
+	SpringArm->TargetArmLength = 2000.0f;
 	FRotator SpringArmRotation(-70, 0, 0);
 	SpringArm->SetWorldRotation(SpringArmRotation);
 	SpringArm->bDoCollisionTest = false;
@@ -143,7 +143,7 @@ float ARTSCameraBase::GetViewportSensetiveZone(float ViewportAxis, float ZonePer
 
 float ARTSCameraBase::GetMovementSpeedScaledOnZoom()
 {
-	float SpringArmLenghNormalized = UKismetMathLibrary::NormalizeToRange(SpringArm->TargetArmLength, 1000.0f, 5000.0f);
+	float SpringArmLenghNormalized = UKismetMathLibrary::NormalizeToRange(SpringArm->TargetArmLength, 1000.0f, 3000.0f);
 	// Creating dependency between zoom scale and camera movement speed
 	return (SpringArmLenghNormalized * 40.0f + 60.0f); 
 

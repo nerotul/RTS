@@ -31,7 +31,7 @@ void APriestBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)
 		}
 
 	}
-	else if (ButtonPressed.GetFName() == FName("RightMouseButton") && bIsPlayersUnit != true && bIsAlive == true)
+	else if (ButtonPressed.GetFName() == FName("RightMouseButton") && bIsPlayersUnit == false && bIsAlive == true)
 	{
 		for (AUnitBase* Unit : RTSPlayerController->UnitSelection)
 		{
@@ -39,5 +39,19 @@ void APriestBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)
 		}
 
 	}
+	else if (ButtonPressed.GetFName() == FName("RightMouseButton") && bIsPlayersUnit == true && bIsAlive == true)
+	{
+		for (AUnitBase* Unit : RTSPlayerController->UnitSelection)
+		{
+			APriestBase* Priest = Cast<APriestBase>(Unit);
+
+			if (IsValid(Priest))
+			{
+				Priest->SetAttackTargetActor(this);
+			}
+		}
+
+	}
+
 
 }
