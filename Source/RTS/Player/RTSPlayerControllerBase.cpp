@@ -66,7 +66,7 @@ void ARTSPlayerControllerBase::ZoomCameraIn()
 	{
 		float SpringArmLenghOldValue = CameraActor->SpringArm->TargetArmLength;
 		float SpringArmLenghNewValue = SpringArmLenghOldValue - ZoomFactor * 200.0f;
-		float ClampedNewValue = FMath::Clamp(SpringArmLenghNewValue, 1000.0f, 5000.0f);
+		float ClampedNewValue = FMath::Clamp(SpringArmLenghNewValue, 1000.0f, 3000.0f);
 		CameraActor->SpringArm->TargetArmLength = ClampedNewValue;
 	}
 }
@@ -77,7 +77,7 @@ void ARTSPlayerControllerBase::ZoomCameraOut()
 	{
 		float SpringArmLenghOldValue = CameraActor->SpringArm->TargetArmLength;
 		float SpringArmLenghNewValue = ZoomFactor * 200.0f + SpringArmLenghOldValue;
-		float ClampedNewValue = FMath::Clamp(SpringArmLenghNewValue, 1000.0f, 5000.0f);
+		float ClampedNewValue = FMath::Clamp(SpringArmLenghNewValue, 1000.0f, 3000.0f);
 		CameraActor->SpringArm->TargetArmLength = ClampedNewValue;
 
 	}

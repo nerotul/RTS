@@ -48,6 +48,19 @@ protected:
 
 	float GetMovementSpeedScaledOnZoom();
 
+	UPROPERTY(EditDefaultsOnly)
+	float UpperRestriction = 4600.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float LowerRestriction = -4600.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float LeftRestriction = 3880.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float RightRestriction = -4600.0f;
+
+
 public:	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	USpringArmComponent* SpringArm = nullptr;

@@ -65,7 +65,10 @@ void ARTSCameraBase::MoveLeft()
 
 	DeltaLocation.X = (1 - ClampedValue) * GetMovementSpeedScaledOnZoom();
 
-	RootSceneComponent->AddRelativeLocation(DeltaLocation);
+	if (GetActorLocation().X < LeftRestriction)
+	{
+		RootSceneComponent->AddRelativeLocation(DeltaLocation);
+	}
 
 }
 
@@ -84,7 +87,11 @@ void ARTSCameraBase::MoveRight()
 
 	DeltaLocation.X = ClampedValue * -GetMovementSpeedScaledOnZoom();
 
-	RootSceneComponent->AddRelativeLocation(DeltaLocation);
+	if (GetActorLocation().X > RightRestriction)
+	{
+		RootSceneComponent->AddRelativeLocation(DeltaLocation);
+
+	}
 
 }
 
@@ -103,7 +110,10 @@ void ARTSCameraBase::MoveUp()
 
 	DeltaLocation.Y = (1 - ClampedValue) * GetMovementSpeedScaledOnZoom();
 
-	RootSceneComponent->AddRelativeLocation(DeltaLocation);
+	if (GetActorLocation().Y < UpperRestriction)
+	{
+		RootSceneComponent->AddRelativeLocation(DeltaLocation);
+	}
 
 }
 
@@ -122,7 +132,10 @@ void ARTSCameraBase::MoveDown()
 
 	DeltaLocation.Y = ClampedValue * -GetMovementSpeedScaledOnZoom();
 
-	RootSceneComponent->AddRelativeLocation(DeltaLocation);
+	if (GetActorLocation().Y > LowerRestriction)
+	{
+		RootSceneComponent->AddRelativeLocation(DeltaLocation);
+	}
 
 }
 
