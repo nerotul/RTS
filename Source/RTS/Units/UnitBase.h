@@ -113,4 +113,14 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* AttackSound = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* DeathSound = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	UParticleSystem* AttackingVFX = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	UParticleSystem* AttackedVFX = nullptr;
+
 };

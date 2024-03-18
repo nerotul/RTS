@@ -89,6 +89,13 @@ void AUnitBase::Attack()
 			AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*SpecificationHandle.Data.Get(), TargetUnit->AbilitySystemComponent);
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), AttackSound, GetActorLocation());
 
+			FTransform VFXTransform;
+			VFXTransform.SetLocation(GetActorLocation());
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), AttackingVFX, VFXTransform);
+
+			VFXTransform.SetLocation(TargetActor->GetActorLocation());
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), AttackedVFX, VFXTransform);
+
 		}
 	}
 }
@@ -198,6 +205,7 @@ void AUnitBase::UnitDeath()
 
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationSingleNode);
 	GetMesh()->PlayAnimation(DeathAnimation, false);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
 
 }
 
