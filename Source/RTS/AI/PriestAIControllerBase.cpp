@@ -23,24 +23,28 @@ void APriestAIControllerBase::Tick(float DeltaTime)
 
 void APriestAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimulus)
 {
-	AUnitBase* SensedUnit = Cast<AUnitBase>(SensedActor);
-
-	if (Stimulus.WasSuccessfullySensed() == true && CheckIfAllyAndWounded(SensedUnit) && ControlledUnit->TargetActor == nullptr)
+	if (ControlledUnit != nullptr)
 	{
-		ControlledUnit->SetAttackTargetActor(SensedUnit);
+		AUnitBase* SensedUnit = Cast<AUnitBase>(SensedActor);
 
-	}
-	else if (Stimulus.WasSuccessfullySensed() == false && IsValid(SensedUnit) && SensedUnit->bIsAlive == true && SensedUnit->bIsPlayersUnit == ControlledUnit->bIsPlayersUnit)
-	{
-		ChooseNewTarget();
-	}
-
-	if (Stimulus.WasSuccessfullySensed() == true && CheckIfEnemyUnitAndAlive(SensedUnit))
-	{
-		if (ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
+		if (Stimulus.WasSuccessfullySensed() == true && CheckIfAllyAndWounded(SensedUnit) && ControlledUnit->TargetActor == nullptr)
 		{
-			ControlledUnit->SetUnitVisibility(true);
-			StopUnitMovement();
+			ControlledUnit->SetAttackTargetActor(SensedUnit);
+
+		}
+		else if (Stimulus.WasSuccessfullySensed() == false && IsValid(SensedUnit) && SensedUnit->bIsAlive == true && SensedUnit->bIsPlayersUnit == ControlledUnit->bIsPlayersUnit)
+		{
+			ChooseNewTarget();
+		}
+
+		if (Stimulus.WasSuccessfullySensed() == true && CheckIfEnemyUnitAndAlive(SensedUnit))
+		{
+			if (ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
+			{
+				ControlledUnit->SetUnitVisibility(true);
+				StopUnitMovement();
+			}
+
 		}
 
 	}
@@ -68,10 +72,13 @@ AUnitBase* APriestAIControllerBase::FindMostWoundedAllyInSight(const TArray<AAct
 
 bool APriestAIControllerBase::CheckIfAllyAndWounded(const AUnitBase* InAllyUnit)
 {
-	if (IsValid(InAllyUnit) && InAllyUnit->bIsAlive == true && InAllyUnit->bIsPlayersUnit == ControlledUnit->bIsPlayersUnit && 
-		InAllyUnit->AttributeSet->GetHealth() < InAllyUnit->AttributeSet->GetMaxHealth())
+	if (ControlledUnit != nullptr)
 	{
-		return true;
+		if (IsValid(InAllyUnit) && InAllyUnit->bIsAlive == true && InAllyUnit->bIsPlayersUnit == ControlledUnit->bIsPlayersUnit &&
+			InAllyUnit->AttributeSet->GetHealth() < InAllyUnit->AttributeSet->GetMaxHealth())
+		{
+			return true;
+		}
 	}
 
 	return false;
@@ -79,14 +86,17 @@ bool APriestAIControllerBase::CheckIfAllyAndWounded(const AUnitBase* InAllyUnit)
 
 void APriestAIControllerBase::ChooseNewTarget()
 {
-	if (UnitBlackboard != nullptr && ControlledUnit->TargetActor == nullptr)
+	if (ControlledUnit != nullptr)
 	{
-		AIPerceptionComponent->GetCurrentlyPerceivedActors(SightSenseConfig->GetSenseImplementation(), PerceivedActors);
-		AUnitBase* ClosestAlly = FindMostWoundedAllyInSight(PerceivedActors);
-		ControlledUnit->SetAttackTargetActor(ClosestAlly);
+		if (UnitBlackboard != nullptr && ControlledUnit->TargetActor == nullptr)
+		{
+			AIPerceptionComponent->GetCurrentlyPerceivedActors(SightSenseConfig->GetSenseImplementation(), PerceivedActors);
+			AUnitBase* ClosestAlly = FindMostWoundedAllyInSight(PerceivedActors);
+			ControlledUnit->SetAttackTargetActor(ClosestAlly);
+
+		}
 
 	}
-
 }
 
 void APriestAIControllerBase::CheckIfEnemiesPerceived()

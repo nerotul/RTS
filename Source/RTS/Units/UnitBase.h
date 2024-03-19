@@ -41,7 +41,7 @@ public:
 	virtual void Attack();
 
 	UPROPERTY(EditInstanceOnly, BlueprintReadOnly)
-	bool bIsPlayersUnit = false;
+	bool bIsPlayersUnit = true;
 
 	UPROPERTY(BlueprintReadWrite)
 	AActor* TargetActor = nullptr;

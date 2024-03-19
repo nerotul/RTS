@@ -43,22 +43,26 @@ void ARTSAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimulus
 {
 	AUnitBase* SensedUnit = Cast<AUnitBase>(SensedActor);
 
-	// If unit has no target and sees enemy, it attacks this enemy
-	if (Stimulus.WasSuccessfullySensed() == true && CheckIfEnemyUnitAndAlive(SensedUnit) && ControlledUnit->TargetActor == nullptr)
+	if (ControlledUnit != nullptr)
 	{
-		ControlledUnit->SetAttackTargetActor(SensedUnit);
-
-		if (ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
+		// If unit has no target and sees enemy, it attacks this enemy
+		if (Stimulus.WasSuccessfullySensed() == true && CheckIfEnemyUnitAndAlive(SensedUnit) && ControlledUnit->TargetActor == nullptr)
 		{
-			ControlledUnit->SetUnitVisibility(true);
-			ControlledUnit->OnInEnemySight();
+			ControlledUnit->SetAttackTargetActor(SensedUnit);
+
+			if (ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
+			{
+				ControlledUnit->SetUnitVisibility(true);
+				ControlledUnit->OnInEnemySight();
+			}
+
+		}
+		// If unit has lost target from sight, it tries to find another target
+		else if (Stimulus.WasSuccessfullySensed() == false && CheckIfEnemyUnitAndAlive(SensedUnit))
+		{
+			ChooseNewTarget();
 		}
 
-	}
-	// If unit has lost target from sight, it tries to find another target
-	else if (Stimulus.WasSuccessfullySensed() == false && CheckIfEnemyUnitAndAlive(SensedUnit))
-	{
-		ChooseNewTarget();
 	}
 }
 
@@ -72,14 +76,18 @@ AUnitBase* ARTSAIControllerBase::FindClosestEnemyInSight(const TArray<AActor*> I
 	float MinDistance = 99999.0f;
 	AUnitBase* ClosestEnemy = nullptr;
 
-	for (AActor* Actor : PerceivedActors)
+	if (ControlledUnit != nullptr)
 	{
-		AUnitBase* Unit = Cast<AUnitBase>(Actor);
-		if (CheckIfEnemyUnitAndAlive(Unit) && ControlledUnit->GetDistanceTo(Unit) < MinDistance)
+		for (AActor* Actor : PerceivedActors)
 		{
-			MinDistance = ControlledUnit->GetDistanceTo(Unit);
-			ClosestEnemy = Unit;
+			AUnitBase* Unit = Cast<AUnitBase>(Actor);
+			if (CheckIfEnemyUnitAndAlive(Unit) && ControlledUnit->GetDistanceTo(Unit) < MinDistance)
+			{
+				MinDistance = ControlledUnit->GetDistanceTo(Unit);
+				ClosestEnemy = Unit;
+			}
 		}
+
 	}
 
 	PerceivedActors.Empty();
@@ -105,8 +113,11 @@ void ARTSAIControllerBase::RepositionUnit()
 
 void ARTSAIControllerBase::StopUnitMovement()
 {
-	UnitBlackboard->SetValueAsVector(FName("TargetLocation"), ControlledUnit->GetActorLocation());
-	MovementWaypoints.Empty();
+	if (UnitBlackboard != nullptr && ControlledUnit != nullptr)
+	{
+		UnitBlackboard->SetValueAsVector(FName("TargetLocation"), ControlledUnit->GetActorLocation());
+		MovementWaypoints.Empty();
+	}
 }
 
 void ARTSAIControllerBase::ChooseNewTarget()
