@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "RTSPlayerControllerBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGoldAmountChanged);
+
 class ARTSCameraBase;
 class ARTSCanvasBase;
 class AUnitBase;
@@ -29,6 +31,15 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<AUnitBase*> UnitSelection;
+
+	UFUNCTION(BlueprintCallable)
+	void ChangePlayersGoldAmount(int DeltaGold);
+
+	UFUNCTION(BlueprintCallable)
+	int GetPlayersGoldAmount() const;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnGoldAmountChanged OnGoldAmountChanged;
 
 protected:
 	virtual void BeginPlay() override;
@@ -62,5 +73,8 @@ protected:
 	void AddMovementWaypoint();
 
 	void StopMovement();
+
+	int PlayersGold = 0;
+
 
 };

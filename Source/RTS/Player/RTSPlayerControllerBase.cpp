@@ -21,6 +21,17 @@ ARTSPlayerControllerBase::ARTSPlayerControllerBase()
 	DefaultClickTraceChannel = ECollisionChannel::ECC_Camera;  
 }
 
+void ARTSPlayerControllerBase::ChangePlayersGoldAmount(int DeltaGold)
+{
+	PlayersGold += DeltaGold;
+	OnGoldAmountChanged.Broadcast();
+}
+
+int ARTSPlayerControllerBase::GetPlayersGoldAmount() const
+{
+	return PlayersGold;
+}
+
 void ARTSPlayerControllerBase::BeginPlay()
 {
 	Super::BeginPlay();
