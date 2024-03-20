@@ -76,5 +76,17 @@ protected:
 
 	int PlayersGold = 0;
 
+	UPROPERTY(EditDefaultsOnly)
+	TArray<USoundBase*> CommandSounds;
+
+	FTimerHandle CommandSoundCooloff;
+
+	void PlayCommandSound(AUnitBase* UnitToPlaySoundAt);
+
+	bool bIsReadyToPlayCommandSound = true;
+
+	void FinishCommandSoundCooloff();
+
+
 
 };

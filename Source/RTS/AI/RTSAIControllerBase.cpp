@@ -122,15 +122,19 @@ void ARTSAIControllerBase::StopUnitMovement()
 
 void ARTSAIControllerBase::ChooseNewTarget()
 {
-	StopUnitMovement();
-
-	AIPerceptionComponent->GetCurrentlyPerceivedActors(SightSenseConfig->GetSenseImplementation(), PerceivedActors);
-	AUnitBase* ClosestEnemy = FindClosestEnemyInSight(PerceivedActors);
-	ControlledUnit->SetAttackTargetActor(ClosestEnemy);
-
-	if (ClosestEnemy == nullptr && ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
+	if (ControlledUnit != nullptr)
 	{
-		ControlledUnit->SetUnitVisibility(false);
+		StopUnitMovement();
+
+		AIPerceptionComponent->GetCurrentlyPerceivedActors(SightSenseConfig->GetSenseImplementation(), PerceivedActors);
+		AUnitBase* ClosestEnemy = FindClosestEnemyInSight(PerceivedActors);
+		ControlledUnit->SetAttackTargetActor(ClosestEnemy);
+
+		if (ClosestEnemy == nullptr && ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
+		{
+			ControlledUnit->SetUnitVisibility(false);
+		}
+
 	}
 }
 

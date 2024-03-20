@@ -26,7 +26,7 @@ protected:
 	USceneComponent* RootSceneComponent = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)
-	UStaticMeshComponent* StaticMesh = nullptr;
+	USkeletalMeshComponent* SkeletalMesh = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)
 	TArray<TSubclassOf<AUnitBase>> UnitsForSale;

@@ -11,6 +11,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "RTS/AI/RTSAIControllerBase.h"
 #include "RTS/GAS/RTSAttributeSet.h"
+#include "Kismet/GameplayStatics.h"
 
 ARTSPlayerControllerBase::ARTSPlayerControllerBase()
 {
@@ -121,17 +122,23 @@ void ARTSPlayerControllerBase::MoveUnit()
 		FHitResult CursorHitResult;
 		GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, CursorHitResult);
 
-		for (AUnitBase* Unit : UnitSelection)
+		if (UnitSelection.Num() > 0)
 		{
-			UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(Unit);
-			UnitBlackboard->SetValueAsVector(FName("TargetLocation"), CursorHitResult.Location);
+			PlayCommandSound(UnitSelection[0]);
 
-			ARTSAIControllerBase* UnitController = Cast<ARTSAIControllerBase>(Unit->GetController());
-			if (IsValid(UnitController))
+			for (AUnitBase* Unit : UnitSelection)
 			{
-				UnitController->MovementWaypoints.Empty();
-				UnitController->MovementWaypoints.Add(CursorHitResult.Location);
-				UnitController->RepositionUnit();
+				UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(Unit);
+				UnitBlackboard->SetValueAsVector(FName("TargetLocation"), CursorHitResult.Location);
+
+				ARTSAIControllerBase* UnitController = Cast<ARTSAIControllerBase>(Unit->GetController());
+				if (IsValid(UnitController))
+				{
+					UnitController->MovementWaypoints.Empty();
+					UnitController->MovementWaypoints.Add(CursorHitResult.Location);
+					UnitController->RepositionUnit();
+				}
+
 			}
 
 		}
@@ -241,6 +248,26 @@ void ARTSPlayerControllerBase::StopMovement()
 		}
 	}
 
+}
+
+void ARTSPlayerControllerBase::PlayCommandSound(AUnitBase* UnitToPlaySoundAt)
+{
+	if (bIsReadyToPlayCommandSound == true)
+	{
+		bIsReadyToPlayCommandSound = false;
+		GetWorldTimerManager().SetTimer(CommandSoundCooloff, this, &ARTSPlayerControllerBase::FinishCommandSoundCooloff, 1.0f, false, 4.0f);
+
+		int32 SoundToPlayIndex = FMath::RandRange(0, CommandSounds.Num() - 1);
+
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), CommandSounds[SoundToPlayIndex], UnitToPlaySoundAt->GetActorLocation());
+
+	}
+
+}
+
+void ARTSPlayerControllerBase::FinishCommandSoundCooloff()
+{
+	bIsReadyToPlayCommandSound = true;
 }
 
 void ARTSPlayerControllerBase::ClearSelection()
