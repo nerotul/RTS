@@ -112,7 +112,7 @@ protected:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	UPROPERTY(EditDefaultsOnly)
-	USoundBase* AttackSound = nullptr;
+	TArray<USoundBase*> AttackSounds;
 
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* DeathSound = nullptr;

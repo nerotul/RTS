@@ -49,7 +49,7 @@ void AStoreBase::TryBuyUnit(int32 UnitsForSaleIndex)
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 		AUnitBase* SpawnedUnit = GetWorld()->SpawnActor<AUnitBase>(UnitsForSale[UnitsForSaleIndex], SpawnTransform, SpawnParams);
 
-		OnUnitBought();
+		OnUnitBought(SpawnedUnit);
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), PurchaseSound, GetActorLocation());
 		RTSController->ChangePlayersGoldAmount(-PurchaseCost);
 

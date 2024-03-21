@@ -87,7 +87,9 @@ void AUnitBase::Attack()
 		{
 			AUnitBase* TargetUnit = Cast<AUnitBase>(TargetActor);
 			AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*SpecificationHandle.Data.Get(), TargetUnit->AbilitySystemComponent);
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), AttackSound, GetActorLocation());
+			
+			int32 SoundToPlayIndex = FMath::RandRange(0, AttackSounds.Num() - 1);
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), AttackSounds[SoundToPlayIndex], GetActorLocation());
 
 			FTransform VFXTransform;
 			VFXTransform.SetLocation(GetActorLocation());

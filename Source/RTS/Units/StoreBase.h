@@ -32,7 +32,7 @@ protected:
 	TArray<TSubclassOf<AUnitBase>> UnitsForSale;
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnUnitBought();
+	void OnUnitBought(const AUnitBase* UnitBought);
 
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* PurchaseSound = nullptr;
