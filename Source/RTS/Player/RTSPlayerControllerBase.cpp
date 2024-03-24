@@ -128,15 +128,19 @@ void ARTSPlayerControllerBase::MoveUnit()
 
 			for (AUnitBase* Unit : UnitSelection)
 			{
-				UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(Unit);
-				UnitBlackboard->SetValueAsVector(FName("TargetLocation"), CursorHitResult.Location);
-
-				ARTSAIControllerBase* UnitController = Cast<ARTSAIControllerBase>(Unit->GetController());
-				if (IsValid(UnitController))
+				if (Unit->bIsAlive == true)
 				{
-					UnitController->MovementWaypoints.Empty();
-					UnitController->MovementWaypoints.Add(CursorHitResult.Location);
-					UnitController->RepositionUnit();
+					UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(Unit);
+					UnitBlackboard->SetValueAsVector(FName("TargetLocation"), CursorHitResult.Location);
+
+					ARTSAIControllerBase* UnitController = Cast<ARTSAIControllerBase>(Unit->GetController());
+					if (IsValid(UnitController))
+					{
+						UnitController->MovementWaypoints.Empty();
+						UnitController->MovementWaypoints.Add(CursorHitResult.Location);
+						UnitController->RepositionUnit();
+					}
+
 				}
 
 			}
