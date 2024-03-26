@@ -391,8 +391,6 @@ void ARTSPlayerControllerBase::SelectSameClassVisibleUnits()
 
 		}
 
-		//OnSelectSameClassUnits(CursorHitActor);
-				
 	}
 }
 

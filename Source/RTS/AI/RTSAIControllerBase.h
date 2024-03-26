@@ -21,7 +21,7 @@ class RTS_API ARTSAIControllerBase : public AAIController
 	GENERATED_BODY()
 
 public:
-	ARTSAIControllerBase();
+	ARTSAIControllerBase(const FObjectInitializer& ObjectInitializer);
 
 	UBlackboardComponent* UnitBlackboard = nullptr;
 

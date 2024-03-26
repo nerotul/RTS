@@ -8,8 +8,9 @@
 #include "RTS/Units/UnitBase.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Navigation/CrowdFollowingComponent.h"
 
-ARTSAIControllerBase::ARTSAIControllerBase()
+ARTSAIControllerBase::ARTSAIControllerBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
 {
 	AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerceptionComponent"));
 
