@@ -12,6 +12,7 @@
 #include "RTS/AI/RTSAIControllerBase.h"
 #include "RTS/GAS/RTSAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
+#include "RTS/Units/PriestBase.h"
 
 ARTSPlayerControllerBase::ARTSPlayerControllerBase()
 {
@@ -62,13 +63,15 @@ void ARTSPlayerControllerBase::SetupInputComponent()
 
 	InputComponent->BindAction("ZoomIn", IE_Pressed, this, &ARTSPlayerControllerBase::ZoomCameraIn);
 	InputComponent->BindAction("ZoomOut", IE_Pressed, this, &ARTSPlayerControllerBase::ZoomCameraOut);
-	InputComponent->BindAction("SelectWithCanvas", IE_Pressed, this, &ARTSPlayerControllerBase::StartSelection);
-	InputComponent->BindAction("SelectWithCanvas", IE_Released, this, &ARTSPlayerControllerBase::StopSelection);
-	InputComponent->BindAction("ExecuteAction", IE_Pressed, this, &ARTSPlayerControllerBase::MoveUnit);
+	InputComponent->BindAction("SelectWithCanvas", IE_Pressed, this, &ARTSPlayerControllerBase::StartCanvasSelection);
+	InputComponent->BindAction("SelectWithCanvas", IE_Released, this, &ARTSPlayerControllerBase::StopCanvasSelection);
+	InputComponent->BindAction("ExecuteAction", IE_Pressed, this, &ARTSPlayerControllerBase::ExecuteAction);
 	InputComponent->BindAction("BindUnitGroup", IE_Pressed, this, &ARTSPlayerControllerBase::BindGroup);
 	InputComponent->BindAction("SelectBindedGroup", IE_Pressed, this, &ARTSPlayerControllerBase::SelectBindedGroup);
 	InputComponent->BindAction("AddMovementWaypoint", IE_Pressed, this, &ARTSPlayerControllerBase::AddMovementWaypoint);
 	InputComponent->BindAction("StopMovement", IE_Pressed, this, &ARTSPlayerControllerBase::StopMovement);
+	InputComponent->BindAction("SelectWithClick", IE_Pressed, this, &ARTSPlayerControllerBase::SelectWithClick);
+	InputComponent->BindAction("SelectMultipleWithClick", IE_Pressed, this, &ARTSPlayerControllerBase::SelectMultipleWithClick);
 
 }
 
@@ -96,7 +99,7 @@ void ARTSPlayerControllerBase::ZoomCameraOut()
 
 }
 
-void ARTSPlayerControllerBase::StartSelection()
+void ARTSPlayerControllerBase::StartCanvasSelection()
 {
 	if (IsValid(CanvasHUDInstance))
 	{
@@ -104,7 +107,7 @@ void ARTSPlayerControllerBase::StartSelection()
 	}
 }
 
-void ARTSPlayerControllerBase::StopSelection()
+void ARTSPlayerControllerBase::StopCanvasSelection()
 {
 	if (IsValid(CanvasHUDInstance))
 	{
@@ -241,6 +244,46 @@ void ARTSPlayerControllerBase::AddMovementWaypoint()
 
 }
 
+void ARTSPlayerControllerBase::ExecuteAction()
+{
+	FHitResult CursorInteractableHitResult;
+
+	if (!GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, CursorInteractableHitResult))
+	{
+		MoveUnit();
+	}
+	else if (GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, CursorInteractableHitResult))
+	{
+		AActor* CursorHitActor = CursorInteractableHitResult.GetActor();
+		AUnitBase* CursorHitUnit = Cast<AUnitBase>(CursorHitActor);
+
+		if (CursorHitUnit->bIsPlayersUnit == false && CursorHitUnit->bIsAlive == true)
+		{
+			for (AUnitBase* Unit : UnitSelection)
+			{
+				APriestBase* Priest = Cast<APriestBase>(Unit);
+				if (Priest == nullptr)
+				{
+					Unit->SetAttackTargetActor(CursorHitUnit);
+
+				}
+			}
+		}
+		else if (CursorHitUnit->bIsPlayersUnit == true && CursorHitUnit->bIsAlive == true)
+		{
+			for (AUnitBase* Unit : UnitSelection)
+			{
+				APriestBase* Priest = Cast<APriestBase>(Unit);
+				if (Priest != nullptr)
+				{
+					Unit->SetAttackTargetActor(CursorHitUnit);
+
+				}
+			}
+		}
+	}
+}
+
 void ARTSPlayerControllerBase::StopMovement()
 {
 	for (AUnitBase* Unit : UnitSelection)
@@ -302,3 +345,44 @@ void ARTSPlayerControllerBase::RemoveUnitFromSelection(AUnitBase* UnitToRemove)
 
 }
 
+void ARTSPlayerControllerBase::SelectWithClick()
+{
+	FHitResult CursorInteractableHitResult;
+
+	if (GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, CursorInteractableHitResult))
+	{
+		AActor* CursorHitActor = CursorInteractableHitResult.GetActor();
+		AUnitBase* CursorHitUnit = Cast<AUnitBase>(CursorHitActor);
+
+		if (CursorHitUnit && CursorHitUnit->bIsAlive == true)
+		{
+			ClearSelection();
+			AddUnitToSelection(CursorHitUnit);
+
+		}
+	}
+
+}
+
+void ARTSPlayerControllerBase::SelectMultipleWithClick()
+{
+	FHitResult CursorInteractableHitResult;
+
+	if (GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, CursorInteractableHitResult))
+	{
+		AActor* CursorHitActor = CursorInteractableHitResult.GetActor();
+		AUnitBase* CursorHitUnit = Cast<AUnitBase>(CursorHitActor);
+
+		if (CursorHitUnit && CursorHitUnit->bIsAlive == true)
+		{
+			if (CursorHitUnit->DecalComponent->IsVisible() == false)
+			{
+				AddUnitToSelection(CursorHitUnit);
+			}
+			else if (CursorHitUnit->DecalComponent->IsVisible() == true)
+			{
+				RemoveUnitFromSelection(CursorHitUnit);
+			}
+		}
+	}
+}

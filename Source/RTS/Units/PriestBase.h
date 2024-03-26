@@ -17,6 +17,4 @@ class RTS_API APriestBase : public AUnitBase
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void OnUnitClicked(AActor* Target, FKey ButtonPressed) override;
-
 };

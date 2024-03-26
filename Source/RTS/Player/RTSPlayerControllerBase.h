@@ -57,8 +57,10 @@ protected:
 
 	ARTSCanvasBase* CanvasHUDInstance = nullptr;
 
-	void StartSelection();
-	void StopSelection();
+	void StartCanvasSelection();
+	void StopCanvasSelection();
+
+	void ExecuteAction();
 
 	void MoveUnit();
 
@@ -87,6 +89,9 @@ protected:
 
 	void FinishCommandSoundCooloff();
 
+	void SelectWithClick();
+
+	void SelectMultipleWithClick();
 
 
 };

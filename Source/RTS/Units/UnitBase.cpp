@@ -38,8 +38,6 @@ void AUnitBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	OnClicked.AddUniqueDynamic(this, &AUnitBase::OnUnitClicked);
-
 	RTSPlayerController = Cast<ARTSPlayerControllerBase>(GetWorld()->GetFirstPlayerController());
 	ThisUnitAIController = Cast<ARTSAIControllerBase>(GetController());
 
@@ -118,43 +116,6 @@ void AUnitBase::SetUnitVisibility(bool bIsVisible)
 		HealthWidget->SetVisibility(false);
 	}
 
-}
-
-void AUnitBase::OnUnitClicked(AActor* Target, FKey ButtonPressed)
-{
-	if (ButtonPressed.GetFName() == FName("LeftMouseButton") && bIsPlayersUnit == true && bIsAlive == true)
-	{
-		if (DecalComponent->IsVisible() == false)
-		{
-			RTSPlayerController->AddUnitToSelection(this);
-		}
-		else if (DecalComponent->IsVisible() == true)
-		{
-			RTSPlayerController->RemoveUnitFromSelection(this);
-		}
-
-	}
-	else if (ButtonPressed.GetFName() == FName("RightMouseButton") && bIsPlayersUnit == false && bIsAlive == true)
-	{
-		for (AUnitBase* Unit : RTSPlayerController->UnitSelection)
-		{
-			Unit->SetAttackTargetActor(this);
-		}
-
-	}
-	else if (ButtonPressed.GetFName() == FName("RightMouseButton") && bIsPlayersUnit == true && bIsAlive == true)
-	{
-		for (AUnitBase* Unit : RTSPlayerController->UnitSelection)
-		{
-			APriestBase* Priest = Cast<APriestBase>(Unit);
-
-			if (IsValid(Priest))
-			{
-				Priest->SetAttackTargetActor(this);
-			}
-		}
-
-	}
 }
 
 void AUnitBase::SetAttackTargetActor(AActor* NewTargetActor)

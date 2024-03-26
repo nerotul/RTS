@@ -84,12 +84,10 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsUnitInEnemySight = false;
 
-protected:
 	UPROPERTY(EditDefaultsOnly)
 	UDecalComponent* DecalComponent = nullptr;
 
-	UFUNCTION()
-	virtual void OnUnitClicked(AActor* Target, FKey ButtonPressed);
+protected:
 
 	ARTSPlayerControllerBase* RTSPlayerController = nullptr;
 
