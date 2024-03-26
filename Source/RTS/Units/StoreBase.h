@@ -37,7 +37,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* PurchaseSound = nullptr;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int PurchaseCost = 20;
 
 public:	
