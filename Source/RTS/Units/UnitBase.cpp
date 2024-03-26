@@ -52,8 +52,6 @@ void AUnitBase::BeginPlay()
 		bIsUnitInEnemySight = true;
 	}
 
-
-
 }
 
 // Called every frame
@@ -67,7 +65,6 @@ void AUnitBase::Tick(float DeltaTime)
 void AUnitBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 
 }
 

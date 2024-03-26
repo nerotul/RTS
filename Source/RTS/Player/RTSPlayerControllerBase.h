@@ -93,5 +93,10 @@ protected:
 
 	void SelectMultipleWithClick();
 
+	void SelectSameClassVisibleUnits();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnSelectSameClassUnits(AActor* ClickedUnit);
+
 
 };

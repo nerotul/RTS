@@ -72,6 +72,8 @@ void ARTSPlayerControllerBase::SetupInputComponent()
 	InputComponent->BindAction("StopMovement", IE_Pressed, this, &ARTSPlayerControllerBase::StopMovement);
 	InputComponent->BindAction("SelectWithClick", IE_Pressed, this, &ARTSPlayerControllerBase::SelectWithClick);
 	InputComponent->BindAction("SelectMultipleWithClick", IE_Pressed, this, &ARTSPlayerControllerBase::SelectMultipleWithClick);
+	InputComponent->BindAction("SelectSameClassVisibleUnits", IE_Pressed, this, &ARTSPlayerControllerBase::SelectSameClassVisibleUnits);
+
 
 }
 
@@ -362,6 +364,36 @@ void ARTSPlayerControllerBase::SelectWithClick()
 		}
 	}
 
+}
+
+void ARTSPlayerControllerBase::SelectSameClassVisibleUnits()
+{
+	FHitResult CursorInteractableHitResult;
+
+	if (GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, CursorInteractableHitResult))
+	{
+		ClearSelection();
+		TArray<AActor*> FoundActors;
+		AActor* CursorHitActor = CursorInteractableHitResult.GetActor();
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), CursorHitActor->GetClass(), FoundActors);
+
+		for (AActor* Actor : FoundActors)
+		{
+			AUnitBase* Unit = Cast<AUnitBase>(Actor);
+
+			if (IsValid(Unit))
+			{
+				if (Unit->bIsAlive == true && Unit->bIsPlayersUnit == true)
+				{
+					AddUnitToSelection(Unit);
+				}
+			}
+
+		}
+
+		//OnSelectSameClassUnits(CursorHitActor);
+				
+	}
 }
 
 void ARTSPlayerControllerBase::SelectMultipleWithClick()
