@@ -10,7 +10,7 @@ void UAttackAnimNotifyBase::Notify(USkeletalMeshComponent* MeshComp, UAnimSequen
 
 	AUnitBase* Unit = Cast<AUnitBase>(MeshComp->GetOwner());
 
-	if (IsValid(Unit))
+	if (IsValid(Unit) && Unit->bIsAlive == true)
 	{
 		Unit->Attack();
 	}

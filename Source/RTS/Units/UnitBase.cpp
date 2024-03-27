@@ -59,6 +59,7 @@ void AUnitBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	CheckIfTargetIsAvailable();
 }
 
 // Called to bind functionality to input
@@ -177,4 +178,18 @@ void AUnitBase::DestroyDeadActor()
 UAbilitySystemComponent* AUnitBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+void AUnitBase::CheckIfTargetIsAvailable()
+{
+	if (ThisUnitAIController != nullptr && TargetActor != nullptr)
+	{
+		AUnitBase* TargetUnit = Cast<AUnitBase>(TargetActor);
+		if (TargetUnit->bIsAlive == false)
+		{
+			ThisUnitAIController->ChooseNewTarget();
+		}
+
+	}
+
 }

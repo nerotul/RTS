@@ -121,4 +121,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	UParticleSystem* AttackedVFX = nullptr;
 
+	void CheckIfTargetIsAvailable();
+
 };
