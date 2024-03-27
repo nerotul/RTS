@@ -34,6 +34,16 @@ int ARTSPlayerControllerBase::GetPlayersGoldAmount() const
 	return PlayersGold;
 }
 
+void ARTSPlayerControllerBase::SelectUnitWithWidgetClick(AUnitBase* SelectedUnit)
+{
+	if (SelectedUnit->bIsAlive == true)
+	{
+		ClearSelection();
+		AddUnitToSelection(SelectedUnit);
+		OnUnitSelectionChanged.Broadcast();
+	}
+}
+
 void ARTSPlayerControllerBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -212,6 +222,8 @@ void ARTSPlayerControllerBase::SelectBindedGroup()
 		}
 	}
 
+	OnUnitSelectionChanged.Broadcast();
+
 }
 
 void ARTSPlayerControllerBase::AddMovementWaypoint()
@@ -327,6 +339,7 @@ void ARTSPlayerControllerBase::ClearSelection()
 	}
 
 	UnitSelection.Empty();
+	OnUnitSelectionChanged.Broadcast();
 }
 
 void ARTSPlayerControllerBase::AddUnitToSelection(AUnitBase* UnitToAdd)
@@ -335,6 +348,7 @@ void ARTSPlayerControllerBase::AddUnitToSelection(AUnitBase* UnitToAdd)
 	{
 		UnitSelection.AddUnique(UnitToAdd);
 		UnitToAdd->IsSelected(true);
+		OnUnitSelectionChanged.Broadcast();
 
 	}
 
@@ -344,6 +358,7 @@ void ARTSPlayerControllerBase::RemoveUnitFromSelection(AUnitBase* UnitToRemove)
 {
 	UnitSelection.Remove(UnitToRemove);
 	UnitToRemove->IsSelected(false);
+	OnUnitSelectionChanged.Broadcast();
 
 }
 
@@ -360,6 +375,7 @@ void ARTSPlayerControllerBase::SelectWithClick()
 		{
 			ClearSelection();
 			AddUnitToSelection(CursorHitUnit);
+			OnUnitSelectionChanged.Broadcast();
 
 		}
 	}
@@ -391,6 +407,9 @@ void ARTSPlayerControllerBase::SelectSameClassVisibleUnits()
 
 		}
 
+		OnUnitSelectionChanged.Broadcast();
+
+
 	}
 }
 
@@ -408,10 +427,14 @@ void ARTSPlayerControllerBase::SelectMultipleWithClick()
 			if (CursorHitUnit->DecalComponent->IsVisible() == false)
 			{
 				AddUnitToSelection(CursorHitUnit);
+				OnUnitSelectionChanged.Broadcast();
+
 			}
 			else if (CursorHitUnit->DecalComponent->IsVisible() == true)
 			{
 				RemoveUnitFromSelection(CursorHitUnit);
+				OnUnitSelectionChanged.Broadcast();
+
 			}
 		}
 	}

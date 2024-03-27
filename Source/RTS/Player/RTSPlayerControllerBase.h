@@ -7,6 +7,7 @@
 #include "RTSPlayerControllerBase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGoldAmountChanged);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitSelectionChanged);
 
 class ARTSCameraBase;
 class ARTSCanvasBase;
@@ -40,6 +41,12 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnGoldAmountChanged OnGoldAmountChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnUnitSelectionChanged OnUnitSelectionChanged;
+
+	UFUNCTION(BlueprintCallable)
+	void SelectUnitWithWidgetClick(AUnitBase* SelectedUnit);
 
 protected:
 	virtual void BeginPlay() override;

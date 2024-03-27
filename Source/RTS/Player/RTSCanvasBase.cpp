@@ -45,6 +45,9 @@ void ARTSCanvasBase::StopSelection()
 
 			}
 		}
+
+		RTSPlayerController->OnUnitSelectionChanged.Broadcast();
+
 	}
 
 	UnitsSelectedWithRectange.Empty();

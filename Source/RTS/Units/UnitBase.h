@@ -8,6 +8,8 @@
 #include "UnitBase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUnitDead, bool, bIsPlayersUnit);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHealthChanged);
+
 
 class ARTSPlayerControllerBase;
 class UBlackboardComponent;
@@ -75,8 +77,12 @@ public:
 
 	void SetUnitVisibility(bool bIsVisible);
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnHealthChanged();
+	//UFUNCTION(BlueprintImplementableEvent)
+	//void OnHealthChanged();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnHealthChanged OnHealthChanged;
+
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnInEnemySight();
