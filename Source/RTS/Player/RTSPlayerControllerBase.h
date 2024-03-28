@@ -14,6 +14,13 @@ class ARTSCameraBase;
 class ARTSCanvasBase;
 class AUnitBase;
 
+UENUM(BlueprintType)
+enum class ECursorMode : uint8 {
+	Default       UMETA(DisplayName = "Default"),
+	Move			UMETA(DisplayName = "Move"),
+	Attack        UMETA(DisplayName = "Attack"),
+};
+
 /**
  * 
  */
@@ -61,6 +68,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<AUnitBase*> GetBindedUnitGroupByIndex(int32 Index);
 
+	UFUNCTION(BlueprintCallable)
+	void StopUnitMovement();
+
+	UFUNCTION(BlueprintCallable)
+	void SetCursorModeToDefault();
+
+	UFUNCTION(BlueprintCallable)
+	void SetCursorModeToMove();
+
+	UFUNCTION(BlueprintCallable)
+	void SetCursorModeToAttack();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -94,8 +113,6 @@ protected:
 
 	void AddMovementWaypoint();
 
-	void StopMovement();
-
 	int PlayersGold = 0;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -118,5 +135,8 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnSelectSameClassUnits(AActor* ClickedUnit);
 
+	ECursorMode CurrentCursorMode = ECursorMode::Default;
+
+	void MouseLeftClick();
 
 };

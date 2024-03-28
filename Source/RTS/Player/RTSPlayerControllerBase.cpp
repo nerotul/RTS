@@ -116,12 +116,13 @@ void ARTSPlayerControllerBase::SetupInputComponent()
 	InputComponent->BindAction("BindUnitGroup", IE_Pressed, this, &ARTSPlayerControllerBase::BindGroup);
 	InputComponent->BindAction("SelectBindedGroup", IE_Pressed, this, &ARTSPlayerControllerBase::SelectBindedGroup);
 	InputComponent->BindAction("AddMovementWaypoint", IE_Pressed, this, &ARTSPlayerControllerBase::AddMovementWaypoint);
-	InputComponent->BindAction("StopMovement", IE_Pressed, this, &ARTSPlayerControllerBase::StopMovement);
-	InputComponent->BindAction("SelectWithClick", IE_Pressed, this, &ARTSPlayerControllerBase::SelectWithClick);
+	InputComponent->BindAction("StopMovement", IE_Pressed, this, &ARTSPlayerControllerBase::StopUnitMovement);
+	InputComponent->BindAction("MouseLeftClick", IE_Pressed, this, &ARTSPlayerControllerBase::MouseLeftClick);
 	InputComponent->BindAction("SelectMultipleWithClick", IE_Pressed, this, &ARTSPlayerControllerBase::SelectMultipleWithClick);
 	InputComponent->BindAction("SelectSameClassVisibleUnits", IE_Pressed, this, &ARTSPlayerControllerBase::SelectSameClassVisibleUnits);
-
-
+	InputComponent->BindAction("SetCursorModeToMove", IE_Pressed, this, &ARTSPlayerControllerBase::SetCursorModeToMove);
+	InputComponent->BindAction("SetCursorModeToAttack", IE_Pressed, this, &ARTSPlayerControllerBase::SetCursorModeToAttack);
+	
 }
 
 void ARTSPlayerControllerBase::ZoomCameraIn()
@@ -190,12 +191,22 @@ void ARTSPlayerControllerBase::MoveUnit()
 					{
 						UnitController->MovementWaypoints.Empty();
 						UnitController->MovementWaypoints.Add(CursorHitResult.Location);
-						UnitController->RepositionUnit();
+
+						if (CurrentCursorMode == ECursorMode::Default || CurrentCursorMode == ECursorMode::Move)
+						{
+							UnitController->RepositionUnit();
+						}
+						else if (CurrentCursorMode == ECursorMode::Attack)
+						{
+							UnitController->FinishRepositionUnit();
+						}
 					}
 
 				}
 
 			}
+
+			SetCursorModeToDefault();
 
 		}
 
@@ -299,45 +310,53 @@ void ARTSPlayerControllerBase::AddMovementWaypoint()
 
 void ARTSPlayerControllerBase::ExecuteAction()
 {
-	FHitResult CursorInteractableHitResult;
-
-	if (!GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, CursorInteractableHitResult))
+	if (CurrentCursorMode == ECursorMode::Default)
 	{
-		MoveUnit();
+		FHitResult CursorInteractableHitResult;
+
+		if (!GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, CursorInteractableHitResult))
+		{
+			MoveUnit();
+		}
+		else if (GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, CursorInteractableHitResult))
+		{
+			AActor* CursorHitActor = CursorInteractableHitResult.GetActor();
+			AUnitBase* CursorHitUnit = Cast<AUnitBase>(CursorHitActor);
+
+			if (CursorHitUnit->bIsPlayersUnit == false && CursorHitUnit->bIsAlive == true)
+			{
+				for (AUnitBase* Unit : UnitSelection)
+				{
+					APriestBase* Priest = Cast<APriestBase>(Unit);
+					if (Priest == nullptr)
+					{
+						Unit->SetAttackTargetActor(CursorHitUnit);
+
+					}
+				}
+			}
+			else if (CursorHitUnit->bIsPlayersUnit == true && CursorHitUnit->bIsAlive == true)
+			{
+				for (AUnitBase* Unit : UnitSelection)
+				{
+					APriestBase* Priest = Cast<APriestBase>(Unit);
+					if (Priest != nullptr)
+					{
+						Unit->SetAttackTargetActor(CursorHitUnit);
+
+					}
+				}
+			}
+		}
+
 	}
-	else if (GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel1, true, CursorInteractableHitResult))
+	else
 	{
-		AActor* CursorHitActor = CursorInteractableHitResult.GetActor();
-		AUnitBase* CursorHitUnit = Cast<AUnitBase>(CursorHitActor);
-
-		if (CursorHitUnit->bIsPlayersUnit == false && CursorHitUnit->bIsAlive == true)
-		{
-			for (AUnitBase* Unit : UnitSelection)
-			{
-				APriestBase* Priest = Cast<APriestBase>(Unit);
-				if (Priest == nullptr)
-				{
-					Unit->SetAttackTargetActor(CursorHitUnit);
-
-				}
-			}
-		}
-		else if (CursorHitUnit->bIsPlayersUnit == true && CursorHitUnit->bIsAlive == true)
-		{
-			for (AUnitBase* Unit : UnitSelection)
-			{
-				APriestBase* Priest = Cast<APriestBase>(Unit);
-				if (Priest != nullptr)
-				{
-					Unit->SetAttackTargetActor(CursorHitUnit);
-
-				}
-			}
-		}
+		SetCursorModeToDefault();
 	}
 }
 
-void ARTSPlayerControllerBase::StopMovement()
+void ARTSPlayerControllerBase::StopUnitMovement()
 {
 	for (AUnitBase* Unit : UnitSelection)
 	{
@@ -346,6 +365,46 @@ void ARTSPlayerControllerBase::StopMovement()
 		{
 			UnitController->StopUnitMovement();
 		}
+	}
+
+}
+
+void ARTSPlayerControllerBase::SetCursorModeToMove()
+{
+	CurrentCursorMode = ECursorMode::Move;
+	this->CurrentMouseCursor = EMouseCursor::Crosshairs;
+
+}
+
+void ARTSPlayerControllerBase::SetCursorModeToDefault()
+{
+	CurrentCursorMode = ECursorMode::Default;
+	this->CurrentMouseCursor = EMouseCursor::Default;
+
+}
+
+void ARTSPlayerControllerBase::SetCursorModeToAttack()
+{
+	CurrentCursorMode = ECursorMode::Attack;
+	this->CurrentMouseCursor = EMouseCursor::CardinalCross;
+
+}
+
+void ARTSPlayerControllerBase::MouseLeftClick()
+{
+	switch (CurrentCursorMode)
+	{
+	case ECursorMode::Default:
+		SelectWithClick();
+		break;
+	case ECursorMode::Move:
+		MoveUnit();
+		break;
+	case ECursorMode::Attack:
+		MoveUnit();
+		break;
+	default:
+		break;
 	}
 
 }

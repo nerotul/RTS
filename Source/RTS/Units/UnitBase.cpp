@@ -82,17 +82,22 @@ void AUnitBase::Attack()
 		if (SpecificationHandle.IsValid())
 		{
 			AUnitBase* TargetUnit = Cast<AUnitBase>(TargetActor);
-			AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*SpecificationHandle.Data.Get(), TargetUnit->AbilitySystemComponent);
-			
-			int32 SoundToPlayIndex = FMath::RandRange(0, AttackSounds.Num() - 1);
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), AttackSounds[SoundToPlayIndex], GetActorLocation());
 
-			FTransform VFXTransform;
-			VFXTransform.SetLocation(GetActorLocation());
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), AttackingVFX, VFXTransform);
+			if (IsValid(TargetUnit))
+			{
+				AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*SpecificationHandle.Data.Get(), TargetUnit->AbilitySystemComponent);
 
-			VFXTransform.SetLocation(TargetActor->GetActorLocation());
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), AttackedVFX, VFXTransform);
+				int32 SoundToPlayIndex = FMath::RandRange(0, AttackSounds.Num() - 1);
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), AttackSounds[SoundToPlayIndex], GetActorLocation());
+
+				FTransform VFXTransform;
+				VFXTransform.SetLocation(GetActorLocation());
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), AttackingVFX, VFXTransform);
+
+				VFXTransform.SetLocation(TargetActor->GetActorLocation());
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), AttackedVFX, VFXTransform);
+
+			}
 
 		}
 	}

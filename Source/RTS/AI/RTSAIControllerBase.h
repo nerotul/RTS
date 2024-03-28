@@ -49,14 +49,14 @@ protected:
 
 	FTimerHandle SightCooloffTimer;
 
-	void FinishRepositionUnit();
-
 	AUnitBase* FindClosestEnemyInSight(const TArray<AActor*> InPerceivedActors);
 
 	bool CheckIfEnemyUnitAndAlive(const AUnitBase* InEnemyUnit);
 
 public:
 	virtual void ChooseNewTarget();
+
+	void FinishRepositionUnit();
 
 	// Making unit to ignore enemies for some time while moving
 	void RepositionUnit();
