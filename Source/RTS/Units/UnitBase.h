@@ -77,9 +77,6 @@ public:
 
 	void SetUnitVisibility(bool bIsVisible);
 
-	//UFUNCTION(BlueprintImplementableEvent)
-	//void OnHealthChanged();
-
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 

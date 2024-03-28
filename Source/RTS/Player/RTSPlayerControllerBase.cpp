@@ -44,6 +44,43 @@ void ARTSPlayerControllerBase::SelectUnitWithWidgetClick(AUnitBase* SelectedUnit
 	}
 }
 
+int32 ARTSPlayerControllerBase::GetBindedGroupValidUnitAmount(int32 GroupIndex)
+{
+	for (AUnitBase* Unit : BindedGroups[GroupIndex])
+	{
+		if (Unit->bIsAlive == false)
+		{
+			BindedGroups[GroupIndex].Remove(Unit);
+		}
+	}
+
+	return BindedGroups[GroupIndex].Num();
+}
+
+void ARTSPlayerControllerBase::SelectBindedGroupWithWidgetClick(int32 GroupIndex)
+{
+	if (BindedGroups.IsValidIndex(GroupIndex))
+	{
+		ClearSelection();
+
+		for (AUnitBase* Unit : BindedGroups[GroupIndex])
+		{
+			if (IsValid(Unit))
+			{
+				AddUnitToSelection(Unit);
+			}
+		}
+	}
+
+	OnUnitSelectionChanged.Broadcast();
+
+}
+
+TArray<AUnitBase*> ARTSPlayerControllerBase::GetBindedUnitGroupByIndex(int32 Index)
+{
+	return BindedGroups[Index];
+}
+
 void ARTSPlayerControllerBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -189,6 +226,8 @@ void ARTSPlayerControllerBase::BindGroup()
 	}
 
 	BindedGroups[IndexToBind] = BindedUnitGroup;
+
+	OnBindedGroupsChanged.Broadcast(IndexToBind);
 
 }
 

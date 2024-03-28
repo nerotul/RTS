@@ -8,6 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGoldAmountChanged);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnitSelectionChanged);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBindedGroupsChanged, int32, BindedGroupIndex);
 
 class ARTSCameraBase;
 class ARTSCanvasBase;
@@ -45,8 +46,20 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnUnitSelectionChanged OnUnitSelectionChanged;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnBindedGroupsChanged OnBindedGroupsChanged;
+
 	UFUNCTION(BlueprintCallable)
 	void SelectUnitWithWidgetClick(AUnitBase* SelectedUnit);
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetBindedGroupValidUnitAmount(int32 GroupIndex);
+
+	UFUNCTION(BlueprintCallable)
+	void SelectBindedGroupWithWidgetClick(int32 GroupIndex);
+
+	UFUNCTION(BlueprintCallable)
+	TArray<AUnitBase*> GetBindedUnitGroupByIndex(int32 Index);
 
 protected:
 	virtual void BeginPlay() override;
@@ -71,11 +84,11 @@ protected:
 
 	void MoveUnit();
 
+	void BindGroup();
+
 	TArray<AUnitBase*> BindedUnitGroup;
 
 	TArray<TArray<AUnitBase*>> BindedGroups;
-
-	void BindGroup();
 
 	void SelectBindedGroup();
 
