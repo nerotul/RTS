@@ -23,7 +23,7 @@ void APriestAIControllerBase::Tick(float DeltaTime)
 
 void APriestAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimulus)
 {
-	if (ControlledUnit != nullptr)
+	if (IsValid(ControlledUnit))
 	{
 		AUnitBase* SensedUnit = Cast<AUnitBase>(SensedActor);
 
@@ -58,7 +58,7 @@ AUnitBase* APriestAIControllerBase::FindMostWoundedAllyInSight(const TArray<AAct
 	for (AActor* Actor : PerceivedActors)
 	{
 		AUnitBase* Unit = Cast<AUnitBase>(Actor);
-		if (CheckIfAllyAndWounded(Unit) && Unit->AttributeSet->GetHealth() < MinHealth)
+		if (IsValid(Unit) && CheckIfAllyAndWounded(Unit) && Unit->AttributeSet->GetHealth() < MinHealth)
 		{
 			MinHealth = Unit->AttributeSet->GetHealth();
 			ClosestAlly = Unit;
@@ -72,7 +72,7 @@ AUnitBase* APriestAIControllerBase::FindMostWoundedAllyInSight(const TArray<AAct
 
 bool APriestAIControllerBase::CheckIfAllyAndWounded(const AUnitBase* InAllyUnit)
 {
-	if (ControlledUnit != nullptr)
+	if (IsValid(ControlledUnit))
 	{
 		if (IsValid(InAllyUnit) && InAllyUnit->bIsAlive == true && InAllyUnit->bIsPlayersUnit == ControlledUnit->bIsPlayersUnit &&
 			InAllyUnit->AttributeSet->GetHealth() < InAllyUnit->AttributeSet->GetMaxHealth())
@@ -86,9 +86,9 @@ bool APriestAIControllerBase::CheckIfAllyAndWounded(const AUnitBase* InAllyUnit)
 
 void APriestAIControllerBase::ChooseNewTarget()
 {
-	if (ControlledUnit != nullptr)
+	if (IsValid(ControlledUnit))
 	{
-		if (UnitBlackboard != nullptr && ControlledUnit->TargetActor == nullptr)
+		if (IsValid(UnitBlackboard) && !IsValid(ControlledUnit->TargetActor))
 		{
 			AIPerceptionComponent->GetCurrentlyPerceivedActors(SightSenseConfig->GetSenseImplementation(), PerceivedActors);
 			AUnitBase* ClosestAlly = FindMostWoundedAllyInSight(PerceivedActors);
@@ -103,7 +103,7 @@ void APriestAIControllerBase::CheckIfEnemiesPerceived()
 {
 	AIPerceptionComponent->GetCurrentlyPerceivedActors(SightSenseConfig->GetSenseImplementation(), PerceivedActors);
 
-	if (FindClosestEnemyInSight(PerceivedActors) == nullptr)
+	if (!IsValid(FindClosestEnemyInSight(PerceivedActors)))
 	{
 		ControlledUnit->SetUnitVisibility(false);
 	}

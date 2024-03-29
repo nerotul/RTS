@@ -71,7 +71,7 @@ void AUnitBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AUnitBase::Attack()
 {
-	if (AbilitySystemComponent && DamageEffect)
+	if (IsValid(AbilitySystemComponent) && IsValid(DamageEffect))
 	{
 		FGameplayEffectContextHandle EffectContextHandle = AbilitySystemComponent->MakeEffectContext();
 
@@ -123,7 +123,7 @@ void AUnitBase::SetUnitVisibility(bool bIsVisible)
 
 void AUnitBase::SetAttackTargetActor(AActor* NewTargetActor)
 {
-	if (ThisUnitAIController->UnitBlackboard != nullptr)
+	if (IsValid(ThisUnitAIController) && IsValid(ThisUnitAIController->UnitBlackboard))
 	{
 		TargetActor = NewTargetActor;
 		ThisUnitAIController->UnitBlackboard->SetValueAsObject(FName("AttackTargetActor"), NewTargetActor);
@@ -187,7 +187,7 @@ UAbilitySystemComponent* AUnitBase::GetAbilitySystemComponent() const
 
 void AUnitBase::CheckIfTargetIsAvailable()
 {
-	if (ThisUnitAIController != nullptr && TargetActor != nullptr)
+	if (IsValid(ThisUnitAIController) && IsValid(TargetActor))
 	{
 		AUnitBase* TargetUnit = Cast<AUnitBase>(TargetActor);
 		if (TargetUnit->bIsAlive == false)

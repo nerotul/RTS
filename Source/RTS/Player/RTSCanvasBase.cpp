@@ -33,13 +33,13 @@ void ARTSCanvasBase::StopSelection()
 
 	bIsDrawing = false;
 
-	if (VectorDifLengh > CanvasDeadZone && IsValid(RTSPlayerController))
+	if (IsValid(RTSPlayerController) && VectorDifLengh > CanvasDeadZone)
 	{
 		RTSPlayerController->ClearSelection();
 
 		for (AUnitBase* Unit : UnitsSelectedWithRectange)
 		{
-			if (Unit->bIsPlayersUnit == true && Unit->bIsAlive == true)
+			if (IsValid(Unit) && Unit->bIsPlayersUnit == true && Unit->bIsAlive == true)
 			{
 				RTSPlayerController->AddUnitToSelection(Unit);
 
@@ -69,7 +69,7 @@ void ARTSCanvasBase::DrawHUD()
 		FVector2D VectorDif = PointA - PointB;
 		float VectorDifLengh = VectorDif.Size();
 
-		if (VectorDifLengh > CanvasDeadZone && IsValid(RTSPlayerController))
+		if (IsValid(RTSPlayerController) && VectorDifLengh > CanvasDeadZone)
 		{
 			DrawRect(CanvasColor, PointA.X, PointA.Y, (PointB.X - PointA.X), (PointB.Y - PointA.Y));
 			GetActorsInSelectionRectangle<AUnitBase>(PointA, PointB, UnitsSelectedWithRectange, true, false);

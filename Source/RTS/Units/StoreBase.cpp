@@ -40,7 +40,7 @@ void AStoreBase::TryBuyUnit(int32 UnitsForSaleIndex)
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	ARTSPlayerControllerBase* RTSController = Cast<ARTSPlayerControllerBase>(PlayerController);
 
-	if (UnitsForSale.IsValidIndex(UnitsForSaleIndex) && RTSController->GetPlayersGoldAmount() >= PurchaseCost)
+	if (IsValid(RTSController) && UnitsForSale.IsValidIndex(UnitsForSaleIndex) && RTSController->GetPlayersGoldAmount() >= PurchaseCost)
 	{
 		FTransform SpawnTransform;
 		FVector SpawnLocation(GetActorLocation().X + 200.0f, GetActorLocation().Y + 200.0f, 108.0f);

@@ -36,7 +36,7 @@ int ARTSPlayerControllerBase::GetPlayersGoldAmount() const
 
 void ARTSPlayerControllerBase::SelectUnitWithWidgetClick(AUnitBase* SelectedUnit)
 {
-	if (SelectedUnit->bIsAlive == true)
+	if (IsValid(SelectedUnit) && SelectedUnit->bIsAlive == true)
 	{
 		ClearSelection();
 		AddUnitToSelection(SelectedUnit);
@@ -48,7 +48,7 @@ int32 ARTSPlayerControllerBase::GetBindedGroupValidUnitAmount(int32 GroupIndex)
 {
 	for (AUnitBase* Unit : BindedGroups[GroupIndex])
 	{
-		if (Unit->bIsAlive == false)
+		if (IsValid(Unit) && Unit->bIsAlive == false)
 		{
 			BindedGroups[GroupIndex].Remove(Unit);
 		}
@@ -181,10 +181,13 @@ void ARTSPlayerControllerBase::MoveUnit()
 
 			for (AUnitBase* Unit : UnitSelection)
 			{
-				if (Unit->bIsAlive == true)
+				if (IsValid(Unit) && Unit->bIsAlive == true)
 				{
 					UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(Unit);
-					UnitBlackboard->SetValueAsVector(FName("TargetLocation"), CursorHitResult.Location);
+					if (IsValid(UnitBlackboard))
+					{
+						UnitBlackboard->SetValueAsVector(FName("TargetLocation"), CursorHitResult.Location);
+					}
 
 					ARTSAIControllerBase* UnitController = Cast<ARTSAIControllerBase>(Unit->GetController());
 					if (IsValid(UnitController))
@@ -220,7 +223,10 @@ void ARTSPlayerControllerBase::BindGroup()
 	
 	for (AUnitBase* Unit : UnitSelection)
 	{
-		BindedUnitGroup.Add(Unit);
+		if (IsValid(Unit))
+		{
+			BindedUnitGroup.Add(Unit);
+		}
 	}
 
 	if (WasInputKeyJustPressed(FName("One")))
@@ -287,19 +293,26 @@ void ARTSPlayerControllerBase::AddMovementWaypoint()
 
 		for (AUnitBase* Unit : UnitSelection)
 		{
-			ARTSAIControllerBase* UnitController = Cast<ARTSAIControllerBase>(Unit->GetController());
-
-			if (IsValid(UnitController))
+			if(IsValid(Unit))
 			{
-				if (UnitController->MovementWaypoints.Num() == 0)
+				ARTSAIControllerBase* UnitController = Cast<ARTSAIControllerBase>(Unit->GetController());
+
+				if (IsValid(UnitController))
 				{
-					UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(Unit);
-					UnitBlackboard->SetValueAsVector(FName("TargetLocation"), CursorHitResult.Location);
-					UnitController->RepositionUnit();
+					if (UnitController->MovementWaypoints.Num() == 0)
+					{
+						UBlackboardComponent* UnitBlackboard = UAIBlueprintHelperLibrary::GetBlackboard(Unit);
+						if (IsValid(UnitBlackboard))
+						{
+							UnitBlackboard->SetValueAsVector(FName("TargetLocation"), CursorHitResult.Location);
+						}
+
+						UnitController->RepositionUnit();
+					}
+
+					UnitController->MovementWaypoints.Add(CursorHitResult.Location);
+
 				}
-
-				UnitController->MovementWaypoints.Add(CursorHitResult.Location);
-
 			}
 
 		}
@@ -323,26 +336,33 @@ void ARTSPlayerControllerBase::ExecuteAction()
 			AActor* CursorHitActor = CursorInteractableHitResult.GetActor();
 			AUnitBase* CursorHitUnit = Cast<AUnitBase>(CursorHitActor);
 
-			if (CursorHitUnit->bIsPlayersUnit == false && CursorHitUnit->bIsAlive == true)
+			if (IsValid(CursorHitUnit) && CursorHitUnit->bIsPlayersUnit == false && CursorHitUnit->bIsAlive == true)
 			{
 				for (AUnitBase* Unit : UnitSelection)
 				{
-					APriestBase* Priest = Cast<APriestBase>(Unit);
-					if (Priest == nullptr)
+					if (IsValid(Unit))
 					{
-						Unit->SetAttackTargetActor(CursorHitUnit);
+						APriestBase* Priest = Cast<APriestBase>(Unit);
+						if (!IsValid(Priest))
+						{
+							Unit->SetAttackTargetActor(CursorHitUnit);
+						}
 
 					}
 				}
 			}
-			else if (CursorHitUnit->bIsPlayersUnit == true && CursorHitUnit->bIsAlive == true)
+			else if (IsValid(CursorHitUnit) && CursorHitUnit->bIsPlayersUnit == true && CursorHitUnit->bIsAlive == true)
 			{
 				for (AUnitBase* Unit : UnitSelection)
 				{
-					APriestBase* Priest = Cast<APriestBase>(Unit);
-					if (Priest != nullptr)
+					if (IsValid(Unit))
 					{
-						Unit->SetAttackTargetActor(CursorHitUnit);
+						APriestBase* Priest = Cast<APriestBase>(Unit);
+						if (IsValid(Priest))
+						{
+							Unit->SetAttackTargetActor(CursorHitUnit);
+
+						}
 
 					}
 				}
@@ -360,10 +380,14 @@ void ARTSPlayerControllerBase::StopUnitMovement()
 {
 	for (AUnitBase* Unit : UnitSelection)
 	{
-		ARTSAIControllerBase* UnitController = Cast<ARTSAIControllerBase>(Unit->GetController());
-		if (IsValid(UnitController))
+		if (IsValid(Unit))
 		{
-			UnitController->StopUnitMovement();
+			ARTSAIControllerBase* UnitController = Cast<ARTSAIControllerBase>(Unit->GetController());
+			if (IsValid(UnitController))
+			{
+				UnitController->StopUnitMovement();
+			}
+
 		}
 	}
 
@@ -411,7 +435,7 @@ void ARTSPlayerControllerBase::MouseLeftClick()
 
 void ARTSPlayerControllerBase::PlayCommandSound(AUnitBase* UnitToPlaySoundAt)
 {
-	if (bIsReadyToPlayCommandSound == true)
+	if (bIsReadyToPlayCommandSound == true && IsValid(UnitToPlaySoundAt))
 	{
 		bIsReadyToPlayCommandSound = false;
 		GetWorldTimerManager().SetTimer(CommandSoundCooloff, this, &ARTSPlayerControllerBase::FinishCommandSoundCooloff, 1.0f, false, 4.0f);
@@ -433,7 +457,11 @@ void ARTSPlayerControllerBase::ClearSelection()
 {
 	for (AUnitBase* Unit : UnitSelection)
 	{
-		Unit->IsSelected(false);
+		if (IsValid(Unit))
+		{
+			Unit->IsSelected(false);
+
+		}
 	}
 
 	UnitSelection.Empty();
@@ -442,7 +470,7 @@ void ARTSPlayerControllerBase::ClearSelection()
 
 void ARTSPlayerControllerBase::AddUnitToSelection(AUnitBase* UnitToAdd)
 {
-	if (UnitToAdd->AttributeSet->GetHealth() > 0)
+	if (IsValid(UnitToAdd) && UnitToAdd->AttributeSet->GetHealth() > 0)
 	{
 		UnitSelection.AddUnique(UnitToAdd);
 		UnitToAdd->IsSelected(true);
@@ -454,9 +482,13 @@ void ARTSPlayerControllerBase::AddUnitToSelection(AUnitBase* UnitToAdd)
 
 void ARTSPlayerControllerBase::RemoveUnitFromSelection(AUnitBase* UnitToRemove)
 {
-	UnitSelection.Remove(UnitToRemove);
-	UnitToRemove->IsSelected(false);
-	OnUnitSelectionChanged.Broadcast();
+	if (IsValid(UnitToRemove))
+	{
+		UnitSelection.Remove(UnitToRemove);
+		UnitToRemove->IsSelected(false);
+		OnUnitSelectionChanged.Broadcast();
+
+	}
 
 }
 
@@ -469,7 +501,7 @@ void ARTSPlayerControllerBase::SelectWithClick()
 		AActor* CursorHitActor = CursorInteractableHitResult.GetActor();
 		AUnitBase* CursorHitUnit = Cast<AUnitBase>(CursorHitActor);
 
-		if (CursorHitUnit && CursorHitUnit->bIsAlive == true)
+		if (IsValid(CursorHitUnit) && CursorHitUnit->bIsAlive == true)
 		{
 			ClearSelection();
 			AddUnitToSelection(CursorHitUnit);
@@ -489,7 +521,10 @@ void ARTSPlayerControllerBase::SelectSameClassVisibleUnits()
 		ClearSelection();
 		TArray<AActor*> FoundActors;
 		AActor* CursorHitActor = CursorInteractableHitResult.GetActor();
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), CursorHitActor->GetClass(), FoundActors);
+		if (IsValid(CursorHitActor))
+		{
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), CursorHitActor->GetClass(), FoundActors);
+		}
 
 		for (AActor* Actor : FoundActors)
 		{
@@ -520,7 +555,7 @@ void ARTSPlayerControllerBase::SelectMultipleWithClick()
 		AActor* CursorHitActor = CursorInteractableHitResult.GetActor();
 		AUnitBase* CursorHitUnit = Cast<AUnitBase>(CursorHitActor);
 
-		if (CursorHitUnit && CursorHitUnit->bIsAlive == true)
+		if (IsValid(CursorHitUnit) && CursorHitUnit->bIsAlive == true)
 		{
 			if (CursorHitUnit->DecalComponent->IsVisible() == false)
 			{

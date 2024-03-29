@@ -34,7 +34,10 @@ void ARTSCameraBase::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerController = GetWorld()->GetFirstPlayerController();
-	PlayerController->SetViewTargetWithBlend(this);
+	if (IsValid(PlayerController))
+	{
+		PlayerController->SetViewTargetWithBlend(this);
+	}
 }
 
 // Called every frame

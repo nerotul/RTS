@@ -45,7 +45,7 @@ void ARTSAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimulus
 {
 	AUnitBase* SensedUnit = Cast<AUnitBase>(SensedActor);
 
-	if (ControlledUnit != nullptr)
+	if (IsValid(ControlledUnit))
 	{
 		// If unit has no target and sees enemy, it attacks this enemy
 		if (Stimulus.WasSuccessfullySensed() == true && CheckIfEnemyUnitAndAlive(SensedUnit) && ControlledUnit->TargetActor == nullptr)
@@ -70,7 +70,10 @@ void ARTSAIControllerBase::EnemySensed(AActor* SensedActor, FAIStimulus Stimulus
 
 void ARTSAIControllerBase::FinishRepositionUnit()
 {
-	UnitBlackboard->SetValueAsBool(FName("bIsRepositioning"), false);
+	if (IsValid(UnitBlackboard))
+	{
+		UnitBlackboard->SetValueAsBool(FName("bIsRepositioning"), false);
+	}
 }
 
 AUnitBase* ARTSAIControllerBase::FindClosestEnemyInSight(const TArray<AActor*> InPerceivedActors)
@@ -78,12 +81,12 @@ AUnitBase* ARTSAIControllerBase::FindClosestEnemyInSight(const TArray<AActor*> I
 	float MinDistance = 99999.0f;
 	AUnitBase* ClosestEnemy = nullptr;
 
-	if (ControlledUnit != nullptr)
+	if (IsValid(ControlledUnit))
 	{
 		for (AActor* Actor : PerceivedActors)
 		{
 			AUnitBase* Unit = Cast<AUnitBase>(Actor);
-			if (CheckIfEnemyUnitAndAlive(Unit) && ControlledUnit->GetDistanceTo(Unit) < MinDistance)
+			if (IsValid(Unit) && CheckIfEnemyUnitAndAlive(Unit) && ControlledUnit->GetDistanceTo(Unit) < MinDistance)
 			{
 				MinDistance = ControlledUnit->GetDistanceTo(Unit);
 				ClosestEnemy = Unit;
@@ -109,13 +112,17 @@ bool ARTSAIControllerBase::CheckIfEnemyUnitAndAlive(const AUnitBase* InEnemyUnit
 
 void ARTSAIControllerBase::RepositionUnit()
 {
-	UnitBlackboard->SetValueAsBool(FName("bIsRepositioning"), true);
-	GetWorldTimerManager().SetTimer(SightCooloffTimer, this, &ARTSAIControllerBase::FinishRepositionUnit, 1.0f, false, 0.5f);
+	if (IsValid(UnitBlackboard))
+	{
+		UnitBlackboard->SetValueAsBool(FName("bIsRepositioning"), true);
+		GetWorldTimerManager().SetTimer(SightCooloffTimer, this, &ARTSAIControllerBase::FinishRepositionUnit, 1.0f, false, 0.5f);
+
+	}
 }
 
 void ARTSAIControllerBase::StopUnitMovement()
 {
-	if (UnitBlackboard != nullptr && ControlledUnit != nullptr)
+	if (IsValid(UnitBlackboard) && IsValid(ControlledUnit))
 	{
 		UnitBlackboard->SetValueAsVector(FName("TargetLocation"), ControlledUnit->GetActorLocation());
 		MovementWaypoints.Empty();
@@ -124,7 +131,7 @@ void ARTSAIControllerBase::StopUnitMovement()
 
 void ARTSAIControllerBase::ChooseNewTarget()
 {
-	if (ControlledUnit != nullptr)
+	if (IsValid(ControlledUnit))
 	{
 		StopUnitMovement();
 
@@ -132,7 +139,7 @@ void ARTSAIControllerBase::ChooseNewTarget()
 		AUnitBase* ClosestEnemy = FindClosestEnemyInSight(PerceivedActors);
 		ControlledUnit->SetAttackTargetActor(ClosestEnemy);
 
-		if (ClosestEnemy == nullptr && ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
+		if (!IsValid(ClosestEnemy) && ControlledUnit->bIsPlayersUnit == false && ControlledUnit->bIsAlive == true)
 		{
 			ControlledUnit->SetUnitVisibility(false);
 		}

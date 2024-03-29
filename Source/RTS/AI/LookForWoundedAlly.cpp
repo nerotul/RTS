@@ -20,7 +20,12 @@ void ULookForWoundedAlly::OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, ui
 	Super::OnBecomeRelevant(OwnerComp, NodeMemory);
 
 	AAIController* AIController = OwnerComp.GetAIOwner();
-	APriestAIControllerBase* PriestAIController = Cast<APriestAIControllerBase>(AIController);
-	PriestAIController->ChooseNewTarget();
+
+	if (IsValid(AIController))
+	{
+		APriestAIControllerBase* PriestAIController = Cast<APriestAIControllerBase>(AIController);
+		PriestAIController->ChooseNewTarget();
+
+	}
 
 }

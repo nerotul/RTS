@@ -38,5 +38,9 @@ void URTSAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, f
 void URTSAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	AUnitBase* OwnerUnit = Cast<AUnitBase>(GetOwningActor());
-	OwnerUnit->OnHealthChanged.Broadcast();
+
+	if (IsValid(OwnerUnit))
+	{
+		OwnerUnit->OnHealthChanged.Broadcast();
+	}
 }
