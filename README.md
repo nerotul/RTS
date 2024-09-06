@@ -1,5 +1,6 @@
 # RTS
-The game is a single player RTS prototype, which objective is to eliminate all enemies on the map.
+The game is a single player RTS prototype, which objective is to eliminate all enemies on the map.  
+Developed with Unreal Engine 4.27
 
 ## Main features
 - RTS-style controls and UI
